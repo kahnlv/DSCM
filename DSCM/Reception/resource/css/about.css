@@ -1,0 +1,91 @@
+@charset "utf-8";
+/* CSS Document */
+
+.about-font{
+	font-size:30px;
+	color:#333;
+	font-weight:500;
+	height:110px;
+	line-height:110px;
+}
+.aboutBoxL{
+	width:257px;
+	border:1px solid #ccc;
+}
+.aboutBoxR{
+	width:854px;
+	padding:30px;
+	border:1px solid #ccc;
+}
+.about-logo{
+	width:266px;
+	height:94px;
+	margin-bottom:30px;
+}
+.about-logo img{
+	width:100%;
+	display:block;
+}
+.about-content{ width:100%; display:inline-block;}
+.aboutboxRlist {
+    width: 100%;
+}
+.aboutboxRlist li {
+    font-size: 18px;
+    height: 50px;
+    letter-spacing: -2px;
+    line-height: 50px;
+    position: relative;
+}
+.aboutboxRlist li a {
+    display: block;
+    padding: 0 60px;
+    position: relative;
+    transition: all 0.8s ease 0s;
+}
+.aboutboxRlist li a i {
+    display: inline-block;
+    height: 20px;
+    left: 20px;
+    position: absolute;
+    right: auto;
+    top: 17px;
+    transition: all 0.5s ease 0s;
+    width: 13px;
+}
+.aboutboxRlist li a:hover {
+    color: #fff;
+}
+.aboutboxRlist li a:hover i {
+    background: url("../images/icon_27-h.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    left: 90%;
+}
+.aboutboxRlist li span {
+    background-color: #ff461d;
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    top: 0;
+    transition: width 0.5s ease 0s;
+    width: 0;
+}
+.aboutboxRlist li:hover span {
+    width: 100%;
+}
+.aboutViewBox .logConborder {
+    border-bottom: 1px dashed #888;
+}
+.aboutViewBox .mesArea {
+    width: 784px;
+}
+.current{
+	    background-color: #ff461d;
+}
+.current a{ color:#fff;}
+.current a i{    background: url("../images/icon_27-h.png") no-repeat;
+    left: 90% !important;
+	display: inline-block;
+    height: 20px;
+    position: absolute;
+    top: 17px;
+    width: 13px;}

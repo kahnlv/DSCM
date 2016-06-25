@@ -1,0 +1,12 @@
+*{margin: 0;padding: 0}
+body{background: #ebeced}
+a{text-decoration: none;}
+.content-left{width: 670px;margin: 5px auto}
+.conten-main{height: 110px;width: 100%;background: white}
+.conten-main a{display: inline-block;width: 138px;height:110px;text-align: center;line-height:170px;color: #424242;
+ border-left: 1px solid #efefef;float: left;font-size: 16px}
+.icon-1{background: url("images/top.png") no-repeat center #696b77;}
+.icon-2{background: url("images/top-font.png") no-repeat center 20px}
+.icon-3{background: url("images/top-poto.png") no-repeat center 20px}
+.icon-4{background: url("images/top-mus.png") no-repeat center 20px}
+.icon-5{background: url("images/top-nav.png") no-repeat center 20px}

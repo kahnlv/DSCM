@@ -1,0 +1,63 @@
+@charset "utf-8";
+/* CSS Document */
+
+.indexbox{
+	margin:0 30px;
+	padding:20px 0 0;
+}
+.indextop{
+	border-bottom:1px solid #3eafe0;
+	width:100%;
+	padding:10px 0;
+}
+.indextitle{
+	line-height:25px;
+	margin-bottom:10px;
+}
+.indextitle img{
+	float:left;
+	margin-right:10px;
+}
+.indextitle a{
+	color:#3eafe0;
+}
+.function li{
+	float:left;
+	margin:10px;
+}
+.function li a{
+	display:block;
+	font-size:13px;
+	line-height:13px;
+	padding:15px 10px;
+	text-align:center;
+}
+.function li a img{
+	margin-bottom:10px;
+}
+.addfunction a{
+	background:url(/backstage/resource/new/images/line.png) repeat-x 0 0;
+	padding:0 12px;
+	height:23px;
+	line-height:23px;
+	border:1px solid #bfcfe1;
+	float:left;
+}
+.addfunction a img{
+	width:14px;
+	height:14px;
+	margin:5px 10px 5px 0;
+	float:left;
+}
+.addfunction span{
+	float:left;
+	line-height:23px;
+	margin-right:10px;
+}
+.how li{
+	background:url(/backstage/resource/new/images/youjian.png) no-repeat 0 7px;
+	padding-left:10px;
+	float:left;
+	line-height:20px;
+	margin-right:20px;
+}

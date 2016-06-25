@@ -1,0 +1,91 @@
+﻿* {
+	outline: medium none;
+	word-wrap: break-word;
+	margin: 0;
+	padding: 0;
+}
+body, td, input, textarea, select, button {
+	color: #555;
+	font: 12px "Microsoft Yahei", "Lucida Grande", Verdana, Lucida, Helvetica, Arial, "Simsun", sans-serif;
+}
+table {
+	border-collapse: collapse;
+	table-layout:fixed;
+}
+th {
+	text-align: left;
+}
+.object-joinin {
+	border-color: transparent transparent #ccc #ccc;
+	border-style: solid;
+	border-width: 0 0 1px 1px;
+	box-shadow: 2px 2px 2px rgba(204, 204, 204, 0.25);
+	line-height: 20px;
+	margin-top: 20px;
+	width: 100%;
+}
+.object-joinin thead th {
+	background-color: #ccc;
+	border-color: #ccc #ccc transparent transparent;
+	border-style: solid;
+	border-width: 1px 1px 0 0;
+	color: #fff;
+	font-weight: 600;
+	height: 20px;
+	padding: 3px 3px;
+}
+.object-joinin tbody th {
+	background-color: #f7f7f7;
+	border-color: #ccc #ccc transparent transparent;
+	border-style: solid;
+	border-width: 1px 1px 0 0;
+	color: #777;
+	height: 20px;
+	padding: 3px 3px;
+	text-align: right;
+	width: 119px;
+}
+.object-joinin tbody td {
+	border-color: #ccc #ccc transparent transparent;
+	border-style: solid;
+	border-width: 1px 1px 0 0;
+	color: #333;
+	height: 20px;
+	padding: 3px 3px;
+	min-width: 149px;
+	word-wrap:break-word;
+}
+.object-operat {
+	margin-top: 20px;
+	height: 20px;
+	font-size: 14px;
+}
+.object-operat span {
+	color: #777;
+	padding: 0 5px;
+	text-align: right;
+	width: 119px;
+	display: block;
+	float: left;
+}
+.object-operat form {
+	margin-left: 4px;
+	float: left;
+}
+.object-btn {
+	text-align: center;
+}
+.object-btn input {
+	padding: 8px 50px;
+	background: #09F;
+	color: #fff;
+	font-size: 14px;
+	cursor: pointer;
+	border: 0;
+	border-radius: 5px;
+	box-shadow: 1px 1px 5px #333;
+	margin-top: 20px;
+	display: inline-block;
+	*display:inline;
+	*zoom:1;
+}

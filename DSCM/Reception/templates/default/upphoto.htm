@@ -1,0 +1,127 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>圈子首页</title>
+<link type="text/css" rel="stylesheet" href="/Reception/resource/new/css/index.css" />
+<script type="text/javascript" src="/Reception/resource/new/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="/Reception/resource/new/js/index.js"></script>
+</head>
+
+<body>
+	<div id="head">
+		<div class="inner clearfix">
+			<div class="logo fl"><a href="#"><img src="/Reception/resource/new/images/logo.png" alt="" /></a></div>
+			<div class="nav fl">
+				<ul class="clearfix">
+					<li class="click"><a href="index.htm">首页</a></li>
+					<li><a href="#">浏览</a></li>
+					<li><a href="#">APP</a></li>
+					<li ><a href="#">更多</a><span id="more-click"></span></li>
+				</ul>
+			</div>
+			<div class="search fr clearfix">
+				<form action="">
+					<input type="text" class="text fl" />
+					<input type="submit" class="btn fl" value="" />
+				</form>
+			</div>
+			<!--更多隐藏下拉菜单-->
+			<div id="more">
+				<span class="morehide-ins"></span>
+				<ul class="morehide">
+					<li class="more-1"><a href="setup.html">账号设置</a></li>
+					<li class="more-2"><a href="">寻找朋友 </a></li>
+					<li class="more-3"><a href="">帮助及回馈</a></li>
+					<li id="more-4"><a href="">退出</a></li>
+				</ul>
+			</div>
+			<!--更多下拉菜单-->
+		</div>
+	</div>
+	<div id="container" class="clearfix">
+		<div class="main fl">
+			
+		</div>
+		<!-- 个人信息 -->
+		<div class="person fr">
+			<div class="per_infor clearfix">
+				<div class="left fl">
+					<h1>Akui_888</h1>
+					<h3>jinrongkui45@163.com</h3>
+				</div>
+				<a href="#" class="right fr"><span></span></a>
+			</div>
+			<ul class="person_nav">
+				<li class="bg1"><a href="arcticle.htm">文章</a></li>
+				<li class="bg2"><a href="letter.htm">通知</a></li>
+				<li class="bg3"><a href="letter_arc.htm">私信</a></li>
+				<li class="bg4"><a href="person.htm">个人设置</a></li>
+			</ul>
+		</div>
+		<!-- 个人信息 -->
+	</div>
+	<!--上传头像弹出框-->
+	<div class="openwin">
+		<div class="openwin-top">上传头像 <div id="close"></div></div>
+		<div class="container">
+			<div class="imageBox">
+				<div class="thumbBox"></div>
+				<div class="spinner" style="display: none"><input type="file" id="file">
+				<div class="spidiv">选择图片</div>
+				</div>
+			</div>
+			<div class="action">
+				<div class="action-rtop">拖拽或缩放虚线框，生成自己满意的头像</div>
+				<input type="text" id="btnCrop" class="unify" value=""><br/>
+				110*110像素<br/>
+				<input type="text" id="btnZoomIn" class="unify" value=""><br/>
+				64*64像素<br/>
+				<input type="text" id="btnZoomOut" class="unify" value=""><br/>
+				30*30像素<br/>
+			</div>
+			<div class="cropped"></div>
+		</div>
+	</div>
+	<!--上传头像弹出框-->
+	<!--遮罩层-->
+	<div id="mask"></div>
+	<!--遮罩层-->
+</body>
+<script type="text/javascript">
+	$(window).load(function() {
+		var options =
+		{
+			thumbBox: '.thumbBox',
+			spinner: '.spinner',
+			imgSrc: 'images/avatar.png'
+		};
+		var cropper = $('.imageBox').cropbox(options);
+		$('#file').on('change', function(){
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				options.imgSrc = e.target.result;
+				cropper = $('.imageBox').cropbox(options);
+			};
+			reader.readAsDataURL(this.files[0]);
+			this.files = [];
+		});
+		$('#btnCrop').on('click', function(){
+			var img = cropper.getDataURL();
+			$('.cropped').append('<img src="'+img+'">');
+		});
+		$('#btnZoomIn').on('click', function(){
+			cropper.zoomIn();
+		});
+		$('#btnZoomOut').on('click', function(){
+			cropper.zoomOut();
+		});
+		//弹出层关闭按钮
+		$('#close').click(function(){
+			$('.openwin').hide();
+			$('#mask').hide();
+		})
+	});
+</script>
+
+</html>

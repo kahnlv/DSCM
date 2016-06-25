@@ -1,0 +1,101 @@
+@charset "utf-8";
+/* CSS Document */
+*{ margin:0; padding:0;}
+body{ font-family:"Microsoft YaHei"; font-size:12px;}
+h1,h2,h3,h4,h5,h6{ font-size:100%;}
+ul,li,dl,dt,dd{ list-style:none;}
+a{ text-decoration:none; color: #666;}
+:focus{ outline:0;}
+img{ border:none;}
+table{border-collapse: collapse;border-spacing: 0;}
+button,input[type="submit"]{ cursor:pointer; border:none medium;}
+i,em{ font-style:normal;}
+
+.clearfix:after{ clear:both; content:" "; font-size:0; height:0; display:block; visibility:hidden;}
+
+.fl{ float:left;}
+.fr{ float:right;}
+.tl{ text-align:left;}
+.tc{ text-align:center;}
+.tr{ text-align:right;}
+
+.b{ font-weight:bold;}
+
+.w{width:100%;}
+.w50{width:5%;}
+.w80{width:8%;}
+.w100{width:10%;}
+.w120{width:12%;}
+.w150{width:15%;}
+.w300{width:30%;}
+.w340{width:34%;}
+.w700{width:69%;}
+
+.wrapper{width:1002px;margin:0 auto;}
+
+.mt5{margin-top:5px;}
+.mt10{margin-top:10px;}
+.mt20{margin-top:20px;}
+.mb10{margin-bottom:10px;}
+.mb20{margin-bottom:20px;}
+.ml10{margin-left:10px;}
+.ml15{margin-left:15px;}
+
+.f_blue{color:#2c69a2 !important;}
+.f_black{color:#000 !important;}
+.f_red{color:#EF1807;}
+.f_ccc{color:#ccc;}
+
+.bn{border:none !important;}
+.bg_blue{background:#f0f5f7 !important;}
+.bg_lblue{background:#edf6fa !important;}
+
+/* 公共头部样式 */
+#header{ width: 100%;height: 90px;background:url(../images/bg_header.jpg) repeat-x;}
+#header .logo{ width: 400px; float: left;}
+#header .feature{ height: 90px; float: left;}
+#header .feature a{display: block;}
+#header .feature li{ width: 90px; height: 90px; float: left;text-align: center;}
+#header .feature li a.on,#header .feature li a:hover{ border-bottom: 5px solid #67d100; background: #2484c1;}
+#header .feature li img{vertical-align: middle; margin-top: 15px; width: 35px; height: 40px;}
+#header .feature li p{ color: #fff; font-size: 14px; font-weight: bold; height: 30px; line-height: 30px;}
+
+#header .head_info{ width:300px; position:relative;}
+#header .head_info .help{ position:absolute; right:10px; top:20px;}
+#header .head_info .help a{ color: #fff; border-right: 1px dotted #03426a; display: inline-block; float: left; padding:0 8px;}
+#header .head_info .help a em{ width: 15px; text-align:center; height: 15px;  border-radius: 50%; background: #03426a; display: inline-block; margin-right: 5px;}
+#header .head_info .user{ border-radius: 20px; background: #03537e; height: 25px; line-height: 25px; position:absolute; right:10px; top:45px;} 
+#header .head_info .user img{ margin-top: 5px; margin-left: 20px;}
+#header .head_info .user  a{  margin: 0 10px; display: inline-block; color: #fff;}
+#header .head_info .user  a em{ width: 15px; height: 15px; text-align:center; line-height:15px; margin-left:10px; background: #cb0303; border-radius: 8px; display: inline-block;}
+
+
+/*左边菜单栏*/
+.sidebar{ width: 230px;height: 100%; border-right: 1px solid #b7d5df; background:#f3fafd; position:absolute; top:0; left:0;}
+.sidebar h3{height: 35px;line-height: 35px; background: #4299ca; color: #fff;padding-left: 20px;}
+.sidebar h3 img{ margin-top: 8px; float: left;}
+.sidebar h3 span{ float: left; margin-left: 5px;}
+.sidebar .my{ width: 230px;}
+.sidebar .my dl dt a{display: block;  color: #333; font-size: 16px;font-weight: bold;}
+.sidebar .my dl dt{ background: #d9ebf3; border-bottom: 1px solid #b9cad3; height: 35px; line-height: 35px;}
+.sidebar .my dl dt img{ display: inline-block; float: left; margin:10px 10px 8px 40px;}
+.sidebar .my dl dd{display: none; width:100%; border-bottom: #b9cad3 1px solid; position: relative;}
+.sidebar .my dl dd a{display: block;color: #000; position:relative;padding-left: 48px; font-size: 14px;  height:35px;line-height:35px; width:100%; box-sizing:border-box;}
+.sidebar .my dl dd a i{width: 3px;height: 7px;background:url(../images/sj_b.png) no-repeat;display: inline-block;margin-right: 10px;vertical-align:middle;}
+.sidebar .my dl dd a:hover i{ background:url(../images/sj_w.png) no-repeat; }
+.sidebar .my dl dd a:hover {background: #3eafe0; border-left: #ea2020 3px solid; color: #fff;}
+.sidebar .my dl dd a:hover em{width: 6px;height: 11px;position: absolute;right: -1px;top: 10px;background: url(../images/sj_ww.png);}
+
+
+
+/*公共翻页样式*/
+.itemPage{text-align:center;border:1px solid #ccc;border-radius:3px;margin-right:20px;}
+.itemPage a,.itemPage em{border-left:1px solid #cecece;display:inline-block;font-size:12px;height:25px;line-height:25px;padding:0 10px;vertical-align:middle;float:left;color:#3eafe0;}
+.itemPage a.actived{color: #666;background:#f5f5f5;}
+
+
+
+/* 公共底部样式 */
+#footer{ }
+
+

@@ -1,0 +1,247 @@
+@charset "utf-8";
+/* CSS Document */
+
+.news-box{
+	width:920px;
+}
+.banner{
+	width:100%;
+	height:310px;
+	position:relative;
+	overflow:hidden;
+}
+.banner a{
+	display:block;
+	width:100%;
+}
+.banner a img{
+	width:100%;
+	height:310px;
+	position:absolute;
+	z-index:1;
+	display:block;
+}
+
+.banner .albumList_bg {
+    background: none repeat scroll 0 0 #000;
+    bottom: -40px;
+    height: 40px;
+    left: 0;
+    opacity: 0.5;
+    position: absolute;
+    text-indent: -9999px;
+    transition: all 0.4s linear 0s;
+    width: 100%;
+	z-index:2;
+}
+.banner:hover .albumList_bg {
+    bottom: 0;
+}
+.banner .des {
+    bottom: -40px;
+    box-sizing: border-box;
+    height: 40px;
+    line-height: 40px;
+    overflow: hidden;
+    padding: 0 20px;
+    position: absolute;
+    text-overflow: ellipsis;
+    transition: all 0.4s linear 0s;
+    white-space: nowrap;
+    width: 100%;
+	z-index:3;
+}
+.banner:hover .des {
+    bottom: 0;
+}
+.banner .des a {
+    color: #fff;
+    font-size: 14px;
+}
+.news-list{
+	width:920px;
+}
+.news-list h3{
+	margin-top:10px;
+	color:#333;
+	height:58px;
+	line-height:58px;
+	font-size:18px;
+	font-weight:normal;
+}
+.news-list dd{
+	height:180px;
+	width:100%;
+	border-top:1px #ccc solid;
+	padding:20px 0;
+}
+.news-list dd img{
+	width:200px;
+	height:180px;
+}
+.news-list .news-list-r{
+	margin-left:20px;
+	width:500px;
+}
+.news-list .news-list-r .newsfont{
+	overflow:hidden;
+	margin-bottom:10px;
+}
+.news-list .news-list-r .newsfont a {
+	 white-space:nowrap;
+	 overflow:hidden;
+	 text-overflow:ellipsis;
+	 width:277px;
+	 font-size:20px;
+	 color:#fe471d;
+	 height:40px;
+	 line-height:40px;
+}
+.news-list .news-list-r .newsfont span{
+	width:42px;
+	height:24px;
+	border-radius:2px;
+	border:1px solid #fe471d;
+	text-align:center;
+	line-height:24px;
+	margin-top:7px;
+	display:block;
+	color:#fe471d;
+	margin-left:10px;
+}
+.news-list .news-list-r span{
+	display:block;
+	line-height:20px;
+	font-size:12px;
+	color:#444;
+}
+.news-list .news-list-r .root{
+	height:100px;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	width:100%;
+}
+.news-list .news-list-r .date{
+	color:#888;
+	margin-top:5px;
+}
+
+.news-reader{
+	width:260px;
+	border:1px solid #ccc;
+	position:relative;
+	height:480px;
+}
+.news-reader .reader{
+	position:absolute;
+	width:100%;
+	z-index:1;
+}
+.news-reader .reader li{
+	float:left;
+	width:130px;
+	text-align:center;
+	height:50px;
+	line-height:50px;
+}
+.current1{
+	border-bottom:1px solid #ff451c;
+}
+
+.news-reader .readerRoot{
+	position:absolute;
+	top:51px;
+}
+
+.news-reader .readerRoot li{
+	border-bottom:1px solid #ccc;
+	width:240px;
+	padding-left:20px;
+}
+.news-reader .readerRoot li a{
+	background:url(../images/list.png) no-repeat left center;
+	line-height:42px;
+	height:42px;
+	padding-left:14px;
+}
+
+.introdus{
+	margin-top:20px;
+	width:260px;
+	border:1px solid #ccc;
+}
+.introdus h3{
+	font-size:16px;
+	color:#666;
+	height:48px;
+	line-height:48px;
+	padding-top:4px;
+	border-bottom:1px solid #ccc;
+	padding-left:10px;
+}
+.introdus ul{
+	width:240px;
+	padding:0 10px;
+}
+.introdus li{
+	padding:10px 0;
+	height:62px;
+	border-bottom:1px solid #ccc;
+}
+.introdus li:last-child{ border-bottom:0;}
+.introdus li img{
+	width:60px;
+	height:60px;
+	display:block;
+	margin-right:10px;
+}
+.introdus li .introdus_jj{
+	height:60px;
+	font-size:12px;
+	color:#666;
+}
+.introdus li .introdus_jj a{ display:block; height:40px; overflow:hidden; font-size:14px; line-height:18px; margin-bottom:5px;}
+
+
+/*新闻详细页*/
+.news-top{
+	width:100%;
+}
+.news-top img{
+	width:100%;
+	height:348px;
+	margin-bottom:30px;
+}
+.news-top .news-root{
+	min-height:700px;
+	margin-bottom:37px;
+}
+ .news-bottom{
+	width:100%;
+	overflow:hidden;
+	border-bottom: 1px solid #ccc;
+}
+ .news-bottom li{
+	float:left;
+	margin-right:30px;
+	padding:30px 0;
+}
+ .news-bottom li a{
+	display:block;
+	width:100%;
+}
+.news-bottom li img{
+	width:250px;
+	height:230px;
+}
+.news-bottom li span{
+	display:block;
+	height:30px;
+	line-height:30px;
+	font-size:20px;
+	color:#333;
+}
+.news-bottom li  .fsiz{
+	font-size:12px !important;
+	color:#777 !important;
+}
