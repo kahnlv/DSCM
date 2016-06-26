@@ -37,14 +37,14 @@ $('.publishLink').bind('click', function () {
 });
 
 $('.messageImg, .nick').on('mouseover', function (e) {
-    var left = $(this).offset().left, top = $(this).offset().top, height = $(this).height(), userid = $(this).parents('.messageList').attr('data-user'), param = { 'act': 'getInfo', 'uid': userid };
+    var left = $(this).offset().left, top = $(this).offset().top, height = $(this).height(), userid = $(this).parents('.messageList').attr('data-user'), param = { 'act': 'getInfo', 'uid': userid }, that = $(this);
     ajax_fun(param, function (result) {
         if (result.success) {
             top = e.clientY - 150 > window.innerHeight / 2 ? top - 254 : (top + height + 16);
             if ($('.popup').html()) {
                 $('.popup').remove();
             }
-            $('body').append(popup(top, left - 20, result));
+            that.append(popup(result));
         }
     });
 });
@@ -61,8 +61,8 @@ $(document).on('click.follow', 'a.focus', function (e) {
 });
 
 //=========显示名片=========
-var popup = function (top, left, data) {
-    var html = '<div class="popup" style="top:' + top + 'px;left:' + left + 'px" >\
+var popup = function (data) {
+    var html = '<div class="popup">\
                     <div class="popTriangle-top-left"></div>\
                     <div class="poptop clearfix">\
                         <div class="fl clearfix">',
@@ -86,13 +86,21 @@ var popup = function (top, left, data) {
 
     if (article) {
         html += '<div class="imgShow clearfix">';
-        for (var i = 0, len = article.length; i < len; i++) {
-            item = article[i];
-            if (item.Article_Pic.length > 0) {
-                html += '<a href=""><img src="' + item.Article_Pic + '" alt=""></a>';
-            } else {
-                html += '<a href="">' + (item.Article_Contents.length > 0 ? unescape(item.Article_Contents) : item.Article_Title) + '</a>';
+        len = article.length;
+        if (len > 0) {
+            for (var i = 0; i < len; i++) {
+                item = article[i];
+                if (item.Article_Pic.length > 0) {
+                    html += '<a href="javascript:;" class="imgCont"><img src="' + item.Article_Pic + '" alt=""></a>';
+                } else {
+                    html += '<a href=""><span class="txtCont">\
+								<p class="title">' + item.Article_Title + '</p>\
+								<p class="txt">' + unescape(item.Article_Contents) + '</p>\
+							</span></a>';
+                }
             }
+        } else {
+            html += '<p class="noData">暂无内容</p>';
         }
         html += '</div>';
     }

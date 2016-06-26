@@ -4,9 +4,9 @@
 <div class="wrapper relative">
     <div class="leftMain">
         <ul class="publishBar clearfix">
-            <li class="user"><span class="userIcon"></span>
+            <li class="user relative"><span class="userIcon"></span>
                 <div class="userHover">上传头像</div>
-            </li>
+                <input type="file" class="head_upload"></li>
             <li><a href="javascript:;" class="publishLink"><i class="publishIcon1"></i>
                 <p>文字</p>
             </a></li>
@@ -33,6 +33,7 @@
             <div class="messageCont fr">
                 <a class="nick" href=""><%=m.user.User_Name %></a>
                 <div class="mainCont">
+                    <div class="clearfix">
                     <%if ((m.Article_Pic + "").Length > 0)
                         { %>
                     <a class="imgCont fl" href="javascript:;">
@@ -45,7 +46,7 @@
                             <%=HttpUtility.UrlDecode(m.Article_Contents) %>
                         </p>
                     </div>
-
+                        </div>
                     <div class="opt">
                         <div class="optLeft">
                             <%if (m.bqs.Length > 0)
@@ -77,8 +78,8 @@
                             <%} %>
                         </div>
                     </div>
-                </div>
-            </div>
+        </div>
+        </div>
         </div>
         <%} %>
     </div>

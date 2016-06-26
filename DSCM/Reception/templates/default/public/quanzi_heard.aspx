@@ -7,7 +7,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>圈子首页</title>
     <link type="text/css" rel="stylesheet" href="/Reception/resource/new/css/qianzi.css" />
-    <link href="/Reception/resource/new/css/global.css" rel="stylesheet">
+    <link type="text/css" href="/Reception/resource/new/css/global.css" rel="stylesheet">
 </head>
 <body>
     <!--头部-->
