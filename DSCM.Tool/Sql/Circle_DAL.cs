@@ -25,19 +25,26 @@ namespace dscm.Tools.Sql
             param[2].Value = userid;
             param[3].Value = type;
 
-            return SqlCon.ExecuteSql("INSERT INTO tbl_article_pl (article_pl_id, article_id, user_id, type) VALUES(@article_pl_id, @article_id,@user_id,@type)", param);
+            return SqlCon.ExecuteSql("INSERT INTO tbl_article_pl (article_pl_id, article_id, user_id, type) VALUES(@article_pl_id, @article_id,@user_id,@type); UPDATE tbl_article set article_hot = ISNULL(article_hot,0) + 1 WHERE article_id = @article_id", param);
         }
 
-        public static int LikeUpdate(string plid, string userid)
+        public static int LikeUpdate(string plid, string userid, int opt, string aid)
         {
             SqlParameter[] param = {
                 new SqlParameter("@article_pl_id",SqlDbType.VarChar,50),
-                new SqlParameter("@user_id",SqlDbType.VarChar,50)};
+                new SqlParameter("@user_id",SqlDbType.VarChar,50),
+                new SqlParameter("@article_id",SqlDbType.VarChar,50)
+            };
 
             param[0].Value = plid;
             param[1].Value = userid;
+            param[2].Value = aid;
 
-            return SqlCon.ExecuteSql("UPDATE tbl_article_pl SET IsDelete = 1 - IsDelete WHERE article_pl_id = @article_pl_id and user_id = @user_id and type = 1", param);
+            string strSql = "UPDATE tbl_article_pl SET IsDelete = 1 - IsDelete WHERE article_pl_id = @article_pl_id and user_id = @user_id and type = 1;";
+
+            strSql += "UPDATE tbl_article set article_hot = ISNULL(article_hot,0) +" + opt + "WHERE article_id = @article_id";
+
+            return SqlCon.ExecuteSql(strSql, param);
         }
 
         public static int FollowAdd(string friend_user_id, string user_id)

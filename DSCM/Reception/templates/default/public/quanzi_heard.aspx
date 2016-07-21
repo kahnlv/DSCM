@@ -2,9 +2,11 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>圈子首页</title>
     <link type="text/css" rel="stylesheet" href="/Reception/resource/new/css/qianzi.css" />
     <link type="text/css" href="/Reception/resource/new/css/global.css" rel="stylesheet">

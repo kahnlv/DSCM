@@ -168,7 +168,7 @@ public class circle : IHttpHandler, IReadOnlySessionState
 
     private void Like(HttpContext context)
     {
-        string userid = getUserId(context), articleId = context.Request["aid"];
+        string userid = getUserId(context), articleId = context.Request["aid"], on = context.Request["o"];
 
         if (userid.Length == 0 || (articleId + "").Length == 0)
         {
@@ -187,7 +187,13 @@ public class circle : IHttpHandler, IReadOnlySessionState
                 }
                 else
                 {
-                    resultCode = Circle_DAL.LikeUpdate(model.Article_Pl_Id, userid);
+                    int opt = 1;
+                    if ((on + "").Length > 0 && "1".Equals(on))
+                    {
+                        opt = -1;
+                    }
+
+                    resultCode = Circle_DAL.LikeUpdate(model.Article_Pl_Id, userid, opt, model.Article_Id);
                 }
 
                 if (resultCode > 0)

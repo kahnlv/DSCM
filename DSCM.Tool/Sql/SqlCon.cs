@@ -49,7 +49,10 @@ namespace dscm.Library
                 SqlDataReader sdr = myCom.ExecuteReader();
                 return sdr;
             }
-            catch { return null; }
+            catch(Exception ex)
+            {
+                return null;
+            }
         }
 
         public int UpLoad(string sql)

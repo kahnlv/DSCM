@@ -82,21 +82,103 @@ namespace DSCM.Reception
 
         public ArrayList daren_DSCM()
         {
-            //ArrayList al = new ArrayList();
-            //string sql = " and user_id in(select distinct user_id from tbl_article)";
-            //tbl_user[] users = SQL.ReadAll<tbl_user>("tbl_user", sql);
-            //foreach (tbl_user user in users)
-            //{
-            //    user.artnum = SQL.Read("tbl_article", " and user_id='" + user.User_Id + "'");
-            //}
-            //al.Add(users);
-            //return al;
             ArrayList al = new ArrayList();
-            renqi_DSCM(al);
-            biaoqianDaren_DSCM(al);
-            guanzhu_DSCM(al);
+            string tagName = QueryString("name"),
+                _pageindex = QueryString("i"),
+                _pagesize = QueryString("s");
+
+            int pageIndex = 1, pageSize = 10;
+
+            if ((_pageindex + "").Length > 0)
+            {
+                int.TryParse(_pageindex, out pageIndex);
+            }
+
+            if ((_pagesize + "").Length > 0)
+            {
+                int.TryParse(_pagesize, out pageSize);
+            }
+
+            GetCircleMaster(al, tagName, pageIndex, pageSize);
+            tag_DSCM(al);
             return al;
         }
+
+        private tbl_user[] GetCircleMaster(ArrayList al, string tagName, int pageIndex = 0, int pageSize = 10)
+        {
+            tbl_user[] user = null;
+            string strSql = "";
+            if ((tagName + "").Length == 0)
+            {
+                tagName = "hot";
+            }
+
+            pageSize = pageIndex * pageSize;
+            pageIndex = (pageIndex - 1) * pageSize;
+
+            switch (tagName)
+            {
+                case "hot":
+                    strSql = string.Format(@"SELECT  u2.n,u.*
+                            FROM tbl_user u ,
+                                (SELECT TOP {0}
+                                        ROW_NUMBER() OVER(ORDER BY(SELECT ISNULL((SELECT
+                                                     SUM(a.article_hot)
+                                                     FROM tbl_article a
+                                                     WHERE
+                                                     a.user_id = u.user_id
+                                                     ), 0)
+                                        ) DESC ) n ,
+                                u.user_id
+                                FROM tbl_user u) u2
+                            WHERE   u.user_id = u2.user_id
+                            AND u2.n > {1}
+                            ORDER BY u2.n;", pageSize, pageIndex);
+                    break;
+                case "like":
+                    break;
+                default:
+                    strSql = string.Format(@"SELECT  tu.*,tu2.n
+                                                FROM    [tbl_user] [tu] ,
+                                                (SELECT TOP {0}
+                                                        ROW_NUMBER() OVER ( ORDER BY (
+                                                           (SELECT [tub].[user_id]
+                                                                   FROM  [tbl_user_biaoqian] [tub]
+                                                                   WHERE   [tub].[biaoqian_name] = '{1}' 
+                                                                   AND tub.[user_id] = tu.[user_id]
+                                                                   GROUP BY [tub].[user_id])
+                                                                   ) DESC ) n ,
+                                                           [tu].[user_id]
+                                                        FROM      [tbl_user] [tu]) [tu2]
+                                                WHERE   tu.[user_id] = tu2.[user_id]
+                                                        AND tu2.n > {2}
+                                                ORDER BY tu2.n;", pageSize, tagName, pageIndex);
+                    break;
+            }
+
+            user = SQL.ReadAll<tbl_user>(strSql);
+
+            if (null != user)
+            {
+                foreach (var u in user)
+                {
+                    u.Guanzhu = user_id.Equals(u.User_Id) ? -1 : SQL.Read("tbl_friend", "friend_user_id = '" + u.User_Id + "' and if_friend = 1 and user_id = '" + user_id + "'");
+                    u.tbl_article = SQL.ReadAll<tbl_article>("select TOP 4 article_id,article_title,article_contents,article_pic from tbl_article where user_id='" + u.User_Id + "' order by article_times desc");
+                    u.tbl_user_biaoqian = SQL.ReadAll<tbl_user_biaoqian>("select TOP 4 biaoqian_name from tbl_user_biaoqian where user_id = '" + u.User_Id + "' group by biaoqian_name order by NEWID ()");
+                }
+            }
+
+            al.Add(user);
+            return user;
+        }
+
+        private void tag_DSCM(ArrayList al)
+        {
+            string strSql = "SELECT TOP 10 biaoqian_name,COUNT(1) hot FROM tbl_user_biaoqian GROUP BY biaoqian_name ORDER BY hot DESC";
+            tbl_user_biaoqian[] tag = SQL.ReadAll<tbl_user_biaoqian>(strSql);
+            al.Add(tag);
+        }
+
         public tbl_user[] userList = new tbl_user[] { };
         public void PageList_DSCM()
         {
@@ -373,9 +455,12 @@ namespace DSCM.Reception
                     {
                         foreach (var s in arc_biaoqian.Split(','))
                         {
-                            string[] colmBianqian = new string[] { "user_id", "biaoqian_name" };
-                            string[] valueBianqian = new string[] { user_id, s };
-                            SQL.Insert("tbl_user_biaoqian", colmBianqian, valueBianqian);
+                            if (SQL.Read("select * from tbl_user_biaoqian", string.Format("user_id = '{0}' and biaoqian_name = '{1}'", user_id, s)) <= 0)
+                            {
+                                string[] colmBianqian = new string[] { "user_id", "biaoqian_name" };
+                                string[] valueBianqian = new string[] { user_id, s };
+                                SQL.Insert("tbl_user_biaoqian", colmBianqian, valueBianqian);
+                            }
                         }
                     }
 

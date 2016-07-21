@@ -23,7 +23,7 @@ public partial class Reception_templates_default_quanzi_index : Page
 #if DEBUG            
             if ((Save("user_id") + "").Length == 0)
             {
-                Save("user_id", "6e61b084-a347-4882-9811-b884901b749d");
+                Save("user_id", "6e61b084-a347-4882-9811-b884901b740a");
             }
 #endif
 

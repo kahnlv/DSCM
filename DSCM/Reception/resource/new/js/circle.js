@@ -293,7 +293,7 @@ var setContentHtml = function (pic, content, title, nickname, tags, guid, isEdit
 }
 
 $(document).on('click.like', '.zanIcon', function () {
-    var $optRight = $(this).parents('.optRight'), id = $optRight.attr('data-id'), param = { 'act': 'like', 'aid': id }, that = $(this);
+    var $optRight = $(this).parents('.optRight'), hasOn = $(this).hasClass('on'), id = $optRight.attr('data-id'), param = { 'act': 'like', 'aid': id, 'o': (hasOn ? 1 : 0) }, that = $(this);
     ajax_fun(param, function (result) {
         if (result.success) {
             $hot = $optRight.find('span .hot');

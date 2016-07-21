@@ -242,7 +242,7 @@ namespace dscm.Tools.Sql
         {
             try
             {
-                string sql = "select count(0) from" + table;
+                string sql = "select count(0) from " + table;
                 if (where.ToLower().Trim().IndexOf("and") == 0)
                 {
                     sql += " where 1=1 " + where;
