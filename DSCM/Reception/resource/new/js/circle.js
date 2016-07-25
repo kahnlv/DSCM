@@ -37,25 +37,13 @@ $('.publishLink').bind('click', function () {
 });
 
 $('.messageImg, .nick').on('mouseover', function (e) {
-    var left = $(this).offset().left, top = $(this).offset().top, height = $(this).height(), userid = $(this).parents('.messageList').attr('data-user'), param = { 'act': 'getInfo', 'uid': userid }, that = $(this);
+    var userid = $(this).parents('.messageList').attr('data-user'), param = { 'act': 'getInfo', 'uid': userid }, that = $(this);
     ajax_fun(param, function (result) {
         if (result.success) {
-            top = e.clientY - 150 > window.innerHeight / 2 ? top - 254 : (top + height + 16);
             if ($('.popup').html()) {
                 $('.popup').remove();
             }
             that.append(popup(result));
-        }
-    });
-});
-
-$(document).on('click.follow', 'a.focus', function (e) {
-    var userid = $(this).attr('data-user'), param = { 'act': 'follow', 'uid': userid }, that = $(this), oldText = that.text();
-    ajax_fun(param, function (result) {
-        if (result.success) {
-            that.text(oldText == '已关注' ? '关注' : '已关注');
-        } else {
-            alert(result.msg);
         }
     });
 });
@@ -123,6 +111,23 @@ $(document).on('mouseover.leftMain', function (e) {
     if (!$(element).parents().hasClass('popup') && !$(element).parents().hasClass('messageImg') && !$(element).hasClass('nick')) {
         $('.popup').remove();
     }
+});
+
+//=========关注/取消关注=========
+$(document).on('click.follow', 'a.focus, a.focusBtn', function (e) {
+    var userid = $(this).attr('data-user'), param = { 'act': 'follow', 'uid': userid }, that = $(this), oldText = that.text();
+    ajax_fun(param, function (result) {
+        if (result.success) {
+            if (that.hasClass('focusBtn')) {
+                that.html($.trim(oldText) == '取消关注' ? '<b>+</b><span>关注</span>' : '<span>取消关注</span>');
+            }
+            else {
+                that.text(oldText == '已关注' ? '关注' : '已关注');
+            }
+        } else {
+            alert(result.msg);
+        }
+    });
 });
 
 $('.uploadPic').on('change', function () {

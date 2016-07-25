@@ -24,8 +24,8 @@
                     <div class="m-info clearfix">
                         <a href="javascript:;" class="m-head">
                             <img src="<%=u.User_Img %>" alt="">
-                        </a>
-                        <a class="focusBtn" href="#">
+                        </a>                        
+                        <a class="focusBtn" href="javascript:;" data-user="<%=u.User_Id %>">
                             <%=u.Guanzhu == 0 ? "<b>+</b><span>关注</span>":"<b></b><span>取消关注</span>" %>
                         </a>
                         <h3>

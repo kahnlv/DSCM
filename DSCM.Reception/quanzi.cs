@@ -99,12 +99,12 @@ namespace DSCM.Reception
                 int.TryParse(_pagesize, out pageSize);
             }
 
-            GetCircleMaster(al, tagName, pageIndex, pageSize);
+            GetCircleMaster(al, tagName, "", pageIndex, pageSize);
             tag_DSCM(al);
             return al;
         }
 
-        private tbl_user[] GetCircleMaster(ArrayList al, string tagName, int pageIndex = 0, int pageSize = 10)
+        private tbl_user[] GetCircleMaster(ArrayList al, string tagName, string user_id, int pageIndex = 0, int pageSize = 10)
         {
             tbl_user[] user = null;
             string strSql = "";
@@ -136,6 +136,21 @@ namespace DSCM.Reception
                             ORDER BY u2.n;", pageSize, pageIndex);
                     break;
                 case "like":
+                    break;
+                case "friend":
+                    strSql = string.Format(@"SELECT  tu.* , tu2.n
+                                                FROM    [tbl_user] [tu] ,
+                                                        ( SELECT TOP {0}
+                                                                    ROW_NUMBER() OVER ( ORDER BY ( SELECT   tu.[user_id]
+                                                                                                   FROM     [tbl_friend] [tf]
+                                                                                                            INNER JOIN [tbl_user] [tu] ON [tu].[user_id] = [tf].[friend_user_id]
+                                                                                                   WHERE    tf.[user_id] = '{1}'
+                                                                                                 ) DESC ) n ,
+                                                                    tu2.[user_id]
+                                                          FROM      [tbl_user] [tu2]
+                                                        ) [tu2]
+                                                WHERE   tu.[user_id] = tu2.[user_id]
+                                                        AND tu2.n > {2};", pageSize, user_id, pageIndex);
                     break;
                 default:
                     strSql = string.Format(@"SELECT  tu.*,tu2.n

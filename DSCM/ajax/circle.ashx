@@ -86,9 +86,9 @@ public class circle : IHttpHandler, IReadOnlySessionState
             }
             else
             {
-                var friend = SQL.Read<DSCM.ds_tbl_friend.tbl_friend>("tbl_friend", "friend_user_id = '" + uid + "' and if_friend = 1 and user_id = '" + userid + "'");
+                var friend = SQL.Read("tbl_friend", "friend_user_id = '" + uid + "' and user_id = '" + userid + "'");
 
-                resultCode = null != friend ? Circle_DAL.FollowUpdate(uid, userid) : Circle_DAL.FollowAdd(uid, userid);
+                resultCode = 0 == friend ? Circle_DAL.FollowAdd(uid, userid) : Circle_DAL.FollowUpdate(uid, userid);
 
                 if (resultCode > 0)
                 {
