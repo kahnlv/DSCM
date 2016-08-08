@@ -4,9 +4,6 @@ using DSCM.ds_tbl_user_biaoqian;
 using DSCM.Library;
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Web;
-using System.Web.UI.WebControls;
 
 public partial class Reception_templates_default_quanzi_daren : Page
 {

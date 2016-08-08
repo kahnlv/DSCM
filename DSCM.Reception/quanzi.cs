@@ -194,6 +194,17 @@ namespace DSCM.Reception
             al.Add(tag);
         }
 
+        public ArrayList follow_DSCM()
+        {
+            ArrayList al = new ArrayList();
+
+            string strSql = "SELECT TOP 4 * FROM [tbl_user] [tu] ORDER BY NEWID()";
+            tbl_user[] recommend = SQL.ReadAll<tbl_user>(strSql);
+            al.Add(recommend);
+
+            return al;
+        }
+
         public tbl_user[] userList = new tbl_user[] { };
         public void PageList_DSCM()
         {

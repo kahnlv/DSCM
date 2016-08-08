@@ -9,13 +9,13 @@
 <div class="wrapper">
     <div class="nav2">
         <ul class="clearfix">
-            <li class="current"><a href="" title="">领域达人</a></li>
-            <li><a href="" title="">我关注的人（2）</a></li>
+            <li class="current"><a href="javascript:;" title="">领域达人</a></li>
+            <li><a href="/Reception/index.aspx?ds=quanzi&cm=follow" title="">我关注的人（2）</a></li>
         </ul>
     </div>
     <div class="blogBox clearfix">
         <div class="blogLeft">
-            <ul class="blogUL">
+            <ul class="blogUL">                
                 <%if (null != user)
                     {
                         foreach (var u in user)
@@ -26,10 +26,10 @@
                             <img src="<%=u.User_Img %>" alt="">
                         </a>                        
                         <a class="focusBtn" href="javascript:;" data-user="<%=u.User_Id %>">
-                            <%=u.Guanzhu == 0 ? "<b>+</b><span>关注</span>":"<b></b><span>取消关注</span>" %>
+                            <%=u.Guanzhu == 0 ? "<b>+</b><span>关注</span>":"<b>-</b><span>取关</span>" %>
                         </a>
                         <h3>
-                            <a class="ttl" href="javascript:;" target="_blank"><%=u.User_Name %></a>
+                            <a class="ttl" href="javascript:;" target="_blank"><%=u.User_Name %>&nbsp;&nbsp;&nbsp;&nbsp;</a>
                         </h3>
                         <div class="tags">
                             <% if (null != u.tbl_user_biaoqian)

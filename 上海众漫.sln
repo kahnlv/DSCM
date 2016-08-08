@@ -1,16 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "DSCM", "DSCM", "{3656B1A1-EAAB-4A1F-B144-7A21D490D7EE}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "DSCM", "DSCM\", "{3656B1A1-EAAB-4A1F-B144-7A21D490D7EE}"
 	ProjectSection(WebsiteProperties) = preProject
 		SccProjectName = "SAK"
 		SccAuxPath = "SAK"
 		SccLocalPath = "SAK"
 		SccProvider = "SAK"
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
-		ProjectReferences = "{E086D8CC-B0E5-4E1C-B672-AAE130A05ADE}|DSCM.Library.dll;{D189CD6E-B733-43D6-BCAB-6B99A1EA77A3}|DSCM.Model.dll;{B79755E1-4FEA-473F-B1B9-DC6121619CD6}|DSCM.Tool.dll;{05B8A0DC-9A45-4D80-A8A0-DE00D06C6105}|DSCM.Config.dll;{510048C3-3F5D-4B28-87D0-5DCAA036CEC7}|DSCM.Control.dll;{6F76055B-96C6-4386-BB5E-82C6ED6EE807}|DSCM.Page.dll;{1D6A74A4-C5FB-4AE0-B4CB-1743DB120B60}|DSCM.BLL.dll;{07730F85-E7B0-4ABD-9097-AE41F1795E6D}|DSCM.Backstage.dll;{93F5F788-B72C-4697-B014-F71887CEEA65}|DSCM.Reception.dll;{6FEBEAD2-4FCB-4F3A-8884-1BFB74AE4BED}|DSCM.Web.dll;"
+		ProjectReferences = "{E086D8CC-B0E5-4E1C-B672-AAE130A05ADE}|DSCM.Library.dll;{D189CD6E-B733-43D6-BCAB-6B99A1EA77A3}|DSCM.Model.dll;{B79755E1-4FEA-473F-B1B9-DC6121619CD6}|DSCM.Tool.dll;{05B8A0DC-9A45-4D80-A8A0-DE00D06C6105}|DSCM.Config.dll;{510048C3-3F5D-4B28-87D0-5DCAA036CEC7}|DSCM.Control.dll;{6F76055B-96C6-4386-BB5E-82C6ED6EE807}|DSCM.Page.dll;{1D6A74A4-C5FB-4AE0-B4CB-1743DB120B60}|DSCM.BLL.dll;{07730F85-E7B0-4ABD-9097-AE41F1795E6D}|DSCM.Backstage.dll;{6FEBEAD2-4FCB-4F3A-8884-1BFB74AE4BED}|DSCM.Web.dll;{93f5f788-b72c-4697-b014-f71887ceea65}|DSCM.Reception.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/DSCM"
 		Debug.AspNetCompiler.PhysicalPath = "DSCM\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\DSCM\"
@@ -104,46 +104,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 12
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://kahnlv.visualstudio.com/defaultcollection
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = DSCM.Backstage\\DSCM.Backstage.csproj
-		SccProjectName1 = DSCM.Backstage
-		SccLocalPath1 = DSCM.Backstage
-		SccProjectUniqueName2 = DSCM.BLL\\DSCM.BLL.csproj
-		SccProjectName2 = DSCM.BLL
-		SccLocalPath2 = DSCM.BLL
-		SccProjectUniqueName3 = DSCM.Config\\DSCM.Config.csproj
-		SccProjectName3 = DSCM.Config
-		SccLocalPath3 = DSCM.Config
-		SccProjectUniqueName4 = DSCM.Control\\DSCM.Control.csproj
-		SccProjectName4 = DSCM.Control
-		SccLocalPath4 = DSCM.Control
-		SccProjectUniqueName5 = DSCM.Library\\DSCM.Library.csproj
-		SccProjectName5 = DSCM.Library
-		SccLocalPath5 = DSCM.Library
-		SccProjectUniqueName6 = DSCM.Model\\DSCM.Model.csproj
-		SccProjectName6 = DSCM.Model
-		SccLocalPath6 = DSCM.Model
-		SccProjectUniqueName7 = DSCM.Page\\DSCM.Page.csproj
-		SccProjectName7 = DSCM.Page
-		SccLocalPath7 = DSCM.Page
-		SccProjectUniqueName8 = DSCM.Reception\\DSCM.Reception.csproj
-		SccProjectName8 = DSCM.Reception
-		SccLocalPath8 = DSCM.Reception
-		SccProjectUniqueName9 = DSCM.Tool\\DSCM.Tool.csproj
-		SccProjectName9 = DSCM.Tool
-		SccLocalPath9 = DSCM.Tool
-		SccProjectUniqueName10 = DSCM.Web\\DSCM.Web.csproj
-		SccProjectName10 = DSCM.Web
-		SccLocalPath10 = DSCM.Web
-		SccWebProject11 = true
-		SccProjectUniqueName11 = DSCM
-		SccProjectName11 = DSCM
-		SccLocalPath11 = DSCM
-		SccProjectEnlistmentChoice11 = 2
 	EndGlobalSection
 EndGlobal

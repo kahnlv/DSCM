@@ -114,12 +114,19 @@ $(document).on('mouseover.leftMain', function (e) {
 });
 
 //=========关注/取消关注=========
-$(document).on('click.follow', 'a.focus, a.focusBtn', function (e) {
+$(document).on('click.follow', 'a.focus, a.focusBtn, a.followbtn', function (e) {
     var userid = $(this).attr('data-user'), param = { 'act': 'follow', 'uid': userid }, that = $(this), oldText = that.text();
     ajax_fun(param, function (result) {
-        if (result.success) {
+        if (result.success) {            
             if (that.hasClass('focusBtn')) {
                 that.html($.trim(oldText) == '取消关注' ? '<b>+</b><span>关注</span>' : '<span>取消关注</span>');
+            }
+            else if (that.hasClass('followbtn')) {
+                if (oldText == '+') {
+                    that.text('-').attr('title', '取消关注');
+                } else {
+                    that.text('+').attr('title', '添加关注');
+                }
             }
             else {
                 that.text(oldText == '已关注' ? '关注' : '已关注');
@@ -348,3 +355,7 @@ var ajax_fun = function (param, callback) {
         }
     });
 }
+
+$(document).on('click.hotTag', '.blogRight a', function () {
+    var tagName = $(this).attr('data-name');
+});
