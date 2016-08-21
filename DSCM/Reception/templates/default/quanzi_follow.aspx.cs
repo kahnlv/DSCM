@@ -8,25 +8,43 @@ using System.Collections;
 public partial class Reception_templates_default_quanzi_follow : Page
 {
     protected tbl_user[] Recommend { get; set; }
+    protected tbl_user[] friend { get; set; }
     public override void EmpInfo(object sender, EventArgs e)
     {
         if (!IsPostBack)
         {
-            string act = dscmSave.QueryString("ds");
-            object obj = dscmSave.GetObject(act);
-            ArrayList al = obj as ArrayList;
 
-            if (al != null)
+            if (Save("user_id").ToString().Equals(""))
             {
-                string alType = "";
-                foreach (var a in al)
+                showPage("请登录。", "/Reception/index.aspx?ds=zc");
+            }
+            else
+            {
+                string act = dscmSave.QueryString("ds");
+                object obj = dscmSave.GetObject(act);
+
+                ArrayList al = obj as ArrayList;
+                if (al != null)
                 {
-                    alType = a.GetType().Name;
-                    switch (alType)
+                    string alType = "";
+                    int i = 0;
+                    foreach (var a in al)
                     {
-                        case "tbl_user[]":
-                            Recommend = a as tbl_user[];
-                            break;
+                        alType = a.GetType().Name;
+                        switch (alType)
+                        {
+                            case "tbl_user[]":
+                                if (i == 0)
+                                {
+                                    friend = a as tbl_user[];
+                                }
+                                else
+                                {
+                                    Recommend = a as tbl_user[];
+                                }
+                                break;
+                        }
+                        i++;
                     }
                 }
             }

@@ -20,13 +20,7 @@ public partial class Reception_templates_default_quanzi_index : Page
             //获取传参
             string act = dscmSave.QueryString("ds");
             object obj = dscmSave.GetObject(act);
-#if DEBUG            
-            if ((Save("user_id") + "").Length == 0)
-            {
-                Save("user_id", "6e61b084-a347-4882-9811-b884901b740a");
-            }
-#endif
-
+            
             if (Save("user_id").ToString().Equals(""))
             {
                 showPage("请登录。", "/Reception/index.aspx?ds=zc");

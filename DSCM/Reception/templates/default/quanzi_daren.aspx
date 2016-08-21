@@ -10,26 +10,28 @@
     <div class="nav2">
         <ul class="clearfix">
             <li class="current"><a href="javascript:;" title="">领域达人</a></li>
-            <li><a href="/Reception/index.aspx?ds=quanzi&cm=follow" title="">我关注的人（2）</a></li>
+            <li><a href="/Reception/index.aspx?ds=quanzi&cm=follow" title="">我关注的人（<%=Count %>）</a></li>
         </ul>
     </div>
     <div class="blogBox clearfix">
         <div class="blogLeft">
-            <ul class="blogUL">                
+            <ul class="blogUL">
                 <%if (null != user)
                     {
-                        foreach (var u in user)
-                        {%>
+                        if (user.Count() > 0)
+                        {
+                            foreach (var u in user)
+                            {%>
                 <li class="blogitm">
                     <div class="m-info clearfix">
                         <a href="javascript:;" class="m-head">
                             <img src="<%=u.User_Img %>" alt="">
-                        </a>                        
+                        </a>
                         <a class="focusBtn" href="javascript:;" data-user="<%=u.User_Id %>">
-                            <%=u.Guanzhu == 0 ? "<b>+</b><span>关注</span>":"<b>-</b><span>取关</span>" %>
+                            <%=u.Guanzhu == 0 ? "<b>+</b><span>关注</span>" : "<span>取消关注</span>" %>
                         </a>
                         <h3>
-                            <a class="ttl" href="javascript:;" target="_blank"><%=u.User_Name %>&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                            <a class="ttl" href="javascript:;" target="_blank"><%=u.User_Name %></a>
                         </h3>
                         <div class="tags">
                             <% if (null != u.tbl_user_biaoqian)
@@ -53,25 +55,37 @@
                                         { %>
                                     <span class="pic"><%=a.Article_Title %><%=HttpUtility.UrlDecode(a.Article_Contents) %></span><span class="layer"></span>
                                     <%}
-    else
-    { %>
+                                        else
+                                        { %>
                                     <span class="pic" style="background: url(<%=a.Article_Pic %>) center center no-repeat;"></span><span class="layer"></span>
                                     <%} %>
                                 </a>
                             </li>
                             <%}
-                            } %>
+                                } %>
                         </ul>
                     </div>
                 </li>
                 <%}
-                    } %>
+                    }
+                    else
+                    { %>
+                <li class="blogitm">
+                暂无领域达人</li>
+                <%}
+                    }
+                    else
+                    { %>
+                <li class="blogitm">
+                暂无领域达人</li>
+                <%}
+                %>
             </ul>
         </div>
         <div class="blogRight">
             <ul>
                 <li class="hot-tag"><a href="javasrcipt:;" data-name="hot">热门</a></li>
-                <li><a href="javasrcipt:;" data-name="like">猜你喜欢</a></li>
+                <%--<li><a href="javasrcipt:;" data-name="like">猜你喜欢</a></li>--%>
                 <%if (null != tag)
                     {
                         foreach (var t in tag)

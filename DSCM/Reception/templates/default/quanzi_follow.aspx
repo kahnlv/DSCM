@@ -22,93 +22,41 @@
         </div>
         <div class="focusList clearfix">
             <ul class="f-cb ztag">
-                <li>
+                <%if (null != friend)
+                    {
+                        if (friend.Count() > 0)
+                        {
+                            foreach (var m in friend)
+                            {%>
+                <li class="friend" data-user="<%=m.User_Id %>">
                     <div class="focusHead">
-                        <a href="http://sengen.lofter.com" target="_blank">
-                            <img class="xtag" src="http://imgsize.ph.126.net/?imgurl=http://imglf0.ph.126.net/gWQlqaWc7S7NqKMICqKCdg==/6598208860763173737.jpg_64x64x0.jpg">
+                        <a href="javascript:;" target="_blank">
+                            <img class="xtag" src="<%=m.User_Img %>">
                         </a>
                     </div>
                     <div class="cnt">
                         <h4>
                             <em>
-                                <a href="http://sengen.lofter.com" class="xtag" target="_blank">SenGen·LoFoTo</a>
+                                <a href="javascript:;" class="xtag" target="_blank"><%=m.User_Name %></a>
                             </em>
                         </h4>
                         <p class="xtag">02/28 17:38更新</p>
                     </div>
-                    <a href="#" class="no_focus" title="取消关注">-</a>
-                    <div class="popup">
-                        <div class="popTriangle-top-left"></div>
-                        <div class="poptop clearfix">
-                            <div class="fl clearfix">
-                                <a href="" class="sHeadIcon fl">
-                                    <img src="" alt=""></a>
-                                <p class="nickname">昵称</p>
-                                <p class="wenzhang"><span class="marR20">文章718</span><span>关注12</span></p>
-                            </div>
-                            <div class="myFocus"><a class="fr focus">已关注</a></div>
-                        </div>
-                        <div class="imgShow clearfix">
-                            <a class="imgCont" href="">
-                                <img src="images/test.jpg" alt=""></a>
-                            <a class="imgCont" href="">
-                                <img src="images/test.jpg" alt=""></a>
-                            <a class="imgCont" href="">
-                                <img src="images/test.jpg" alt=""></a>
-                        </div>
-                        <div class="recommend">
-                            更多相似达人:<a href="" title="">北欧达人</a>
-                        </div>
-                    </div>
+                    <a href="javascript:;" class="no_focus" title="取消关注">-</a>
                 </li>
-                <li>
-                    <div class="focusHead">
-                        <a href="http://sengen.lofter.com" target="_blank">
-                            <img class="xtag" src="http://imgsize.ph.126.net/?imgurl=http://imglf0.ph.126.net/gWQlqaWc7S7NqKMICqKCdg==/6598208860763173737.jpg_64x64x0.jpg">
-                        </a>
-                    </div>
-                    <div class="cnt">
-                        <h4>
-                            <em>
-                                <a href="http://sengen.lofter.com" class="xtag" target="_blank">SenGen·LoFoTo</a>
-                            </em>
-                        </h4>
-                        <p class="xtag">02/28 17:38更新</p>
-                    </div>
-                    <a href="#" class="no_focus" title="取消关注">-</a>
+                <%}
+                    }
+                    else
+                    {%>
+                <li>暂无关注好友
                 </li>
-                <li>
-                    <div class="focusHead">
-                        <a href="http://sengen.lofter.com" target="_blank">
-                            <img class="xtag" src="http://imgsize.ph.126.net/?imgurl=http://imglf0.ph.126.net/gWQlqaWc7S7NqKMICqKCdg==/6598208860763173737.jpg_64x64x0.jpg">
-                        </a>
-                    </div>
-                    <div class="cnt">
-                        <h4>
-                            <em>
-                                <a href="http://sengen.lofter.com" class="xtag" target="_blank">SenGen·LoFoTo</a>
-                            </em>
-                        </h4>
-                        <p class="xtag">02/28 17:38更新</p>
-                    </div>
-                    <a href="#" class="no_focus" title="取消关注">-</a>
+                <%}
+                    }
+                    else
+                    {%>
+                <li>暂无关注好友
                 </li>
-                <li>
-                    <div class="focusHead">
-                        <a href="http://sengen.lofter.com" target="_blank">
-                            <img class="xtag" src="http://imgsize.ph.126.net/?imgurl=http://imglf0.ph.126.net/gWQlqaWc7S7NqKMICqKCdg==/6598208860763173737.jpg_64x64x0.jpg">
-                        </a>
-                    </div>
-                    <div class="cnt">
-                        <h4>
-                            <em>
-                                <a href="http://sengen.lofter.com" class="xtag" target="_blank">SenGen·LoFoTo</a>
-                            </em>
-                        </h4>
-                        <p class="xtag">02/28 17:38更新</p>
-                    </div>
-                    <a href="#" class="no_focus" title="取消关注">-</a>
-                </li>
+                <%} %>
             </ul>
         </div>
         <div class="searchCol">
@@ -119,15 +67,31 @@
             <div class="recomFollowArea">
                 <h3>推荐关注</h3>
                 <div class="recomFollowList">
-                    <%foreach (var m in Recommend)
-                        {%>
+                    <%if (null != Recommend)
+                        {
+                            if (Recommend.Count() > 0)
+                            {
+                                foreach (var m in Recommend)
+                                {%>
                     <div class="recomItem">
                         <a title="<%=m.User_Name %>" href="javascript:;" target="_blank">
                             <img src="<%=m.User_Img %>">
                         </a>
                         <a href="javascript:;" class="followbtn" data-user="<%=m.User_Id %>" title="添加关注">+</a>
                     </div>
-                    <% }%>
+                    <% }
+                        }
+                        else
+                        {%>
+                    暂无推荐
+
+                               <% 
+                                       }
+                                   }
+                                   else
+                                   {%>
+                    暂无推荐
+                    <%} %>
                 </div>
             </div>
         </div>

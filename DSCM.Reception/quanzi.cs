@@ -99,12 +99,12 @@ namespace DSCM.Reception
                 int.TryParse(_pagesize, out pageSize);
             }
 
-            GetCircleMaster(al, tagName, "", pageIndex, pageSize);
+            GetCircleMaster(al, tagName, pageIndex, pageSize);
             tag_DSCM(al);
             return al;
         }
 
-        private tbl_user[] GetCircleMaster(ArrayList al, string tagName, string user_id, int pageIndex = 0, int pageSize = 10)
+        private tbl_user[] GetCircleMaster(ArrayList al, string tagName, int pageIndex = 0, int pageSize = 10)
         {
             tbl_user[] user = null;
             string strSql = "";
@@ -126,14 +126,16 @@ namespace DSCM.Reception
                                                      SUM(a.article_hot)
                                                      FROM tbl_article a
                                                      WHERE
-                                                     a.user_id = u.user_id
+                                                     a.user_id = u.user_id 
                                                      ), 0)
                                         ) DESC ) n ,
                                 u.user_id
-                                FROM tbl_user u) u2
+                                FROM tbl_user u 
+                                WHERE u.user_id <> '{2}'
+                            ) u2
                             WHERE   u.user_id = u2.user_id
                             AND u2.n > {1}
-                            ORDER BY u2.n;", pageSize, pageIndex);
+                            ORDER BY u2.n;", pageSize, pageIndex, user_id);
                     break;
                 case "like":
                     break;
@@ -153,26 +155,19 @@ namespace DSCM.Reception
                                                         AND tu2.n > {2};", pageSize, user_id, pageIndex);
                     break;
                 default:
-                    strSql = string.Format(@"SELECT  tu.*,tu2.n
-                                                FROM    [tbl_user] [tu] ,
-                                                (SELECT TOP {0}
-                                                        ROW_NUMBER() OVER ( ORDER BY (
-                                                           (SELECT [tub].[user_id]
-                                                                   FROM  [tbl_user_biaoqian] [tub]
-                                                                   WHERE   [tub].[biaoqian_name] = '{1}' 
-                                                                   AND tub.[user_id] = tu.[user_id]
-                                                                   GROUP BY [tub].[user_id])
-                                                                   ) DESC ) n ,
-                                                           [tu].[user_id]
-                                                        FROM      [tbl_user] [tu]) [tu2]
-                                                WHERE   tu.[user_id] = tu2.[user_id]
-                                                        AND tu2.n > {2}
-                                                ORDER BY tu2.n;", pageSize, tagName, pageIndex);
+                    strSql = string.Format(@"SELECT * FROM [tbl_user] [tu],
+                                                (SELECT TOP {0} t.[user_id] FROM
+                                                    (SELECT TOP {2}  [tu].*
+                                                        FROM    [tbl_user_biaoqian] [tub]
+                                                        INNER JOIN [tbl_user] [tu] ON [tu].[user_id] = [tub].[user_id]
+                                                        WHERE   [tub].[biaoqian_name] = '{1}'
+                                                    AND tub.user_id <> '{3}') t) t WHERE
+                                            tu.[user_id] = t.[user_id]", pageSize, tagName, pageIndex, user_id);
                     break;
             }
 
             user = SQL.ReadAll<tbl_user>(strSql);
-
+            
             if (null != user)
             {
                 foreach (var u in user)
@@ -197,12 +192,48 @@ namespace DSCM.Reception
         public ArrayList follow_DSCM()
         {
             ArrayList al = new ArrayList();
+            string strSql = @" SELECT tu.*, tf.[friend_id],(SELECT TOP 1 [ta].[article_times] FROM [tbl_article] [ta] WHERE ta.[user_id] =  tu.[user_id] 
+                                    ORDER BY [ta].[article_times]) update_time FROM [tbl_friend] [tf]
+                                    INNER JOIN [tbl_user] [tu] ON tf.[friend_user_id] = tu.[user_id]
+                                    WHERE [tf].[user_id] = '" + user_id + "' and [tf].[if_friend] = 1 ORDER BY tf.[friend_id] DESC";
 
-            string strSql = "SELECT TOP 4 * FROM [tbl_user] [tu] ORDER BY NEWID()";
-            tbl_user[] recommend = SQL.ReadAll<tbl_user>(strSql);
-            al.Add(recommend);
+            al.Add(SQL.ReadAll<tbl_user>(strSql));
+
+            strSql = @"SELECT TOP 4 * FROM [tbl_user] [tu]
+                                WHERE
+                                [tu].[user_id] NOT IN (SELECT[tf].[friend_user_id] FROM[tbl_friend][tf] WHERE[tf].[user_id] = '" + user_id + @"' and [tf].[if_friend] = 1 ')
+                                AND
+                                tu.[user_id] <> '" + user_id + "' ORDER BY NEWID()";
+
+            al.Add(SQL.ReadAll<tbl_user>(strSql));
 
             return al;
+        }
+
+        public void GetList_DSCM()
+        {
+            string name = QueryString("name"),
+                pageIndex = QueryString("pi"),
+                pageSize = QueryString("ps");
+
+            int _pageIndex = 0,
+                _pageSize = 0;
+
+            int.TryParse(pageIndex, out _pageIndex);
+            int.TryParse(pageSize, out _pageSize);
+
+            ArrayList al = new ArrayList();
+            GetCircleMaster(al, name, _pageIndex, _pageSize);
+
+            if (al.Count > 0)
+            {
+                PageWrite(Newtonsoft.Json.JsonConvert.SerializeObject(al[0]), "STR");
+            }
+            else {
+                if ((user_id + "").Length == 0) {
+
+                }
+            }
         }
 
         public tbl_user[] userList = new tbl_user[] { };

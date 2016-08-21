@@ -15,31 +15,38 @@ public partial class Reception_templates_default_quanzi_daren : Page
     {
         if (!this.IsPostBack)
         {
-            //获取传参
-            string act = dscmSave.QueryString("ds");
-            object obj = dscmSave.GetObject(act);
-
-            ArrayList al = obj as ArrayList;
-            if (al != null)
+            if (Save("user_id").ToString().Equals(""))
             {
-                string alType = "";
-                foreach (var a in al)
+                showPage("请登录。", "/Reception/index.aspx?ds=zc");
+            }
+            else
+            {
+                //获取传参
+                string act = dscmSave.QueryString("ds");
+                object obj = dscmSave.GetObject(act);
+
+                ArrayList al = obj as ArrayList;
+                if (al != null)
                 {
-                    alType = a.GetType().Name;
-                    switch (alType)
+                    string alType = "";
+                    foreach (var a in al)
                     {
-                        case "tbl_user_biaoqian[]":
-                            tag = a as tbl_user_biaoqian[];
-                            break;
-                        case "tbl_user[]":
-                            user = a as tbl_user[];
-                            break;
+                        alType = a.GetType().Name;
+                        switch (alType)
+                        {
+                            case "tbl_user_biaoqian[]":
+                                tag = a as tbl_user_biaoqian[];
+                                break;
+                            case "tbl_user[]":
+                                user = a as tbl_user[];
+                                break;
+                        }
                     }
                 }
-            }
 
-            //userList = SQL.ReadAll<tbl_user>("tbl_user", " and user_recommend=1");
-            Count = SQL.Read("tbl_friend", " and user_id='" + Save("user_id").ToString() + "'");
+                //userList = SQL.ReadAll<tbl_user>("tbl_user", " and user_recommend=1");
+                Count = SQL.Read("tbl_friend", " and [tf].[if_friend] = 1 and  user_id='" + Save("user_id").ToString() + "'");
+            }
         }
     }
 }

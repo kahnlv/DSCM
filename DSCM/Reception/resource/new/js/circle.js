@@ -36,19 +36,28 @@ $('.publishLink').bind('click', function () {
     }
 });
 
+//=========显示名片=========
 $('.messageImg, .nick').on('mouseover', function (e) {
     var userid = $(this).parents('.messageList').attr('data-user'), param = { 'act': 'getInfo', 'uid': userid }, that = $(this);
-    ajax_fun(param, function (result) {
-        if (result.success) {
-            if ($('.popup').html()) {
-                $('.popup').remove();
+    if (!$('.popup').html()) {
+        ajax_fun(param, function (result) {
+            if (result.success) {
+                that.append(popup(result));
             }
-            that.append(popup(result));
-        }
-    });
+        });
+    }
+});
+$('.f-cb li').on('mouseover', function (e) {
+    var userid = $(this).attr('data-user'), param = { 'act': 'getInfo', 'uid': userid }, that = $(this);
+    if (!$('.popup').html()) {
+        ajax_fun(param, function (result) {
+            if (result.success) {
+                that.append(popup(result));
+            }
+        });
+    }
 });
 
-//=========显示名片=========
 var popup = function (data) {
     var html = '<div class="popup">\
                     <div class="popTriangle-top-left"></div>\
@@ -106,18 +115,15 @@ var popup = function (data) {
 };
 
 //=========移除名片=========
-$(document).on('mouseover.leftMain', function (e) {
-    var element = e.srcElement || e.target;
-    if (!$(element).parents().hasClass('popup') && !$(element).parents().hasClass('messageImg') && !$(element).hasClass('nick')) {
-        $('.popup').remove();
-    }
+$(document).on('mouseout', '.popup', function (e) {
+    $(this).remove();
 });
 
 //=========关注/取消关注=========
 $(document).on('click.follow', 'a.focus, a.focusBtn, a.followbtn', function (e) {
     var userid = $(this).attr('data-user'), param = { 'act': 'follow', 'uid': userid }, that = $(this), oldText = that.text();
     ajax_fun(param, function (result) {
-        if (result.success) {            
+        if (result.success) {
             if (that.hasClass('focusBtn')) {
                 that.html($.trim(oldText) == '取消关注' ? '<b>+</b><span>关注</span>' : '<span>取消关注</span>');
             }
@@ -344,9 +350,12 @@ $(document).on('click.delete', '.deleted', function () {
 });
 
 
-var ajax_fun = function (param, callback) {
+var ajax_fun = function (param, callback, url) {
+    if (!url) {
+        url = '/ajax/circle.ashx'
+    }
     $.ajax({
-        url: '/ajax/circle.ashx',
+        url: url,
         data: param, dataType: 'json',
         success: function (result) {
             (callback && typeof (callback) === 'function') && callback(result);
@@ -357,5 +366,62 @@ var ajax_fun = function (param, callback) {
 }
 
 $(document).on('click.hotTag', '.blogRight a', function () {
-    var tagName = $(this).attr('data-name');
+    var tagName = $(this).attr('data-name'),
+        pageIndex = 1, pageSize = 10,
+        param = {};
+    if ($(this).parent('li').hasClass('hot-tag')) {
+        return false;
+    }
+    else {
+        $(this).parent('li').addClass('hot-tag').siblings().removeClass('hot-tag');
+        param = { ds: 'quanzi', cm: 'GetList', pi: pageIndex, ps: pageSize, name: tagName };
+        ajax_fun(param, function (data) {
+            var len = data.length, item, html = '';
+            if (data && len > 0) {
+                for (var i = 0; i < len; i++) {
+                    item = data[i];
+                    html += '<li class="blogitm">\
+                    <div class="m-info clearfix">\
+                        <a href="javascript:;" class="m-head">\
+                            <img src="'+ item.User_Img + '" alt="">\
+                        </a>\
+                        <a class="focusBtn" href="javascript:;" data-user="'+ item.User_Id + '">\
+                            '+ (item.Guanzhu == 0 ? "<b>+</b><span>关注</span>" : "<span>取消关注</span>") + '\
+                        </a>\
+                        <h3>\
+                            <a class="ttl" href="javascript:;" target="_blank">'+ item.User_Name + '</a>\
+                        </h3>\
+                        <div class="tags">';
+                    if (item.tbl_user_biaoqian && item.tbl_user_biaoqian.length > 0) {
+                        for (var j = 0, l = item.tbl_user_biaoqian.length; j < l; j++) {
+                            html += item.tbl_user_biaoqian[j].biaoqian_Name;
+                        }
+                    }
+                    html += '</div>\
+                    </div>\
+                    <div class="postlist">\
+                        <ul>';
+                    if (item.tbl_article && item.tbl_article.length > 0) {
+                        for (var j = 0, l = item.tbl_article.length; j < l; j++) {
+                            var aItem = item.tbl_article[j];
+                            html += '<li class="m-post m-post-img"><a class="fullnk" href="javascript:;" target="_blank">';
+                            if (aItem.Article_Pic.length == 0) {
+                                html += '<span class="pic">' + aItem.Article_Title + unescape(aItem.Article_Contents) + '</span><span class="layer"></span>';
+                            }
+                            else {
+                                html += '<span class="pic" style="background: url(' + aItem.Article_Pic + ') center center no-repeat;"></span><span class="layer"></span>'
+                            }
+                            html += '</a></li>'
+                        }
+                    }
+                    html += '</ul>\
+                    </div>\
+                </li>';
+                }
+            }
+
+            $('.blogUL').html(html);
+
+        }, '/Reception/index.aspx');
+    }
 });
