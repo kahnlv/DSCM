@@ -9,6 +9,8 @@ public partial class Reception_templates_default_quanzi_follow : Page
 {
     protected tbl_user[] Recommend { get; set; }
     protected tbl_user[] friend { get; set; }
+
+    public int Count = 0;
     public override void EmpInfo(object sender, EventArgs e)
     {
         if (!IsPostBack)
@@ -47,6 +49,8 @@ public partial class Reception_templates_default_quanzi_follow : Page
                         i++;
                     }
                 }
+
+                Count = SQL.Read("tbl_friend tf", "  [tf].[if_friend] = 1 and  user_id='" + Save("user_id").ToString() + "'");
             }
         }
     }

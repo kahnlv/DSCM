@@ -201,7 +201,7 @@ namespace DSCM.Reception
 
             strSql = @"SELECT TOP 4 * FROM [tbl_user] [tu]
                                 WHERE
-                                [tu].[user_id] NOT IN (SELECT[tf].[friend_user_id] FROM[tbl_friend][tf] WHERE[tf].[user_id] = '" + user_id + @"' and [tf].[if_friend] = 1 ')
+                                [tu].[user_id] NOT IN (SELECT[tf].[friend_user_id] FROM[tbl_friend][tf] WHERE [tf].[user_id] = '" + user_id + @"' and [tf].[if_friend] = 1)
                                 AND
                                 tu.[user_id] <> '" + user_id + "' ORDER BY NEWID()";
 

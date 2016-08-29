@@ -11,7 +11,7 @@
     <div class="nav2">
         <ul class="clearfix">
             <li><a href="/Reception/index.aspx?ds=quanzi&cm=daren" title="">领域达人</a></li>
-            <li class="current"><a href="javascript:;" title="">我关注的人（2）</a></li>
+            <li class="current"><a href="javascript:;" title="">我关注的人（<%=Count %>）</a></li>
         </ul>
     </div>
     <div class="focusBox clearfix">

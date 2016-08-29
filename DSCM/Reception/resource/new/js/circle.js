@@ -19,11 +19,14 @@ $('.publishLink').bind('click', function () {
     switch ($(this).parent('li').index()) {
         case 1:
             $('.editInputDiv').eq(2).show();
+            $('.titleInputDiv').show();
             //$('.musicInputDiv').hide().eq(-1).show();
             break;
         case 2:
             $('.editInputDiv').eq(0).show();
+            $('.picUpload').show();
             $('.muti_picUpload').hide();
+            $('.picUploadWrap').hide();
             break;
         case 3:
             $('.editInputDiv').eq(1).show();
@@ -41,6 +44,7 @@ $('.messageImg, .nick').on('mouseover', function (e) {
     var userid = $(this).parents('.messageList').attr('data-user'), param = { 'act': 'getInfo', 'uid': userid }, that = $(this);
     if (!$('.popup').html()) {
         ajax_fun(param, function (result) {
+            console.log(result)
             if (result.success) {
                 that.append(popup(result));
             }
@@ -51,6 +55,7 @@ $('.f-cb li').on('mouseover', function (e) {
     var userid = $(this).attr('data-user'), param = { 'act': 'getInfo', 'uid': userid }, that = $(this);
     if (!$('.popup').html()) {
         ajax_fun(param, function (result) {
+            console.log(result)
             if (result.success) {
                 that.append(popup(result));
             }
@@ -81,8 +86,8 @@ var popup = function (data) {
         html += '</div>';
     }
 
-    if (article) {
-        html += '<div class="imgShow clearfix">';
+    html += '<div class="imgShow clearfix">';
+    if (article && article.length > 0) {
         len = article.length;
         if (len > 0) {
             for (var i = 0; i < len; i++) {
@@ -99,8 +104,11 @@ var popup = function (data) {
         } else {
             html += '<p class="noData">暂无内容</p>';
         }
-        html += '</div>';
+    } else {
+        html += '<p class="noData">暂无内容</p>';
     }
+
+    html += '</div>';
 
     if (alike) {
         for (var i = 0, len = alike.length ; i < len ; i++) {
@@ -115,7 +123,7 @@ var popup = function (data) {
 };
 
 //=========移除名片=========
-$(document).on('mouseout', '.popup', function (e) {
+$(document).on('mouseleave', '.popup', function (e) {
     $(this).remove();
 });
 
@@ -181,6 +189,9 @@ $('.uploadPic').on('change', function () {
                     alert(result.msg);
                 }
             }
+        },
+        error: function () {
+            alert('您上传的图片超过1M，请裁剪后再重新上传')
         }
     });
 });
@@ -197,9 +208,10 @@ var setImgHtml = function (imgSrc) {
 $('.del').live('click', function () {
     $(this).parent().remove();
     if ($('.imgList').length == 0) {
-        $('.picUpload').eq(0).show();
+        $('.picUpload').show();
         $('.muti_picUpload').hide();
         $('.picUploadWrap').hide();
+        $('.editInputDiv').eq(-1).hide();
     }
     return false;
 });
@@ -270,7 +282,7 @@ var setContentHtml = function (pic, content, title, nickname, tags, guid, isEdit
                 <div class="mainCont">',
                 tag = '';
     if (pic) {
-        html += '<a class="imgCont fl" href="">\
+        html += '<a class="imgCont fl smallImg" href="javascript:;">\
                         <img src="'+ pic + '" alt="">\
                     </a>';
     }
@@ -424,4 +436,90 @@ $(document).on('click.hotTag', '.blogRight a', function () {
 
         }, '/Reception/index.aspx');
     }
+});
+
+$(document).on('click', '.smallImg', function () {
+    $(this).hide();
+    $(this).siblings('.bigImg').show();
+});
+$(document).on('click', '.bigImg', function () {
+    $(this).hide();
+    $(this).siblings('.smallImg').show();
+});
+
+$('.hot').on('click', function (e) {
+    var html = ' <div class="review_pop relative hotPanle">\
+					<i class="triange_top" style="right: 183px;"></i>\
+					<ul class="review_list marT20">\
+						<li class="clearfix">\
+							<a class="img_left">\
+								<img src="images/test.jpg" alt="">\
+							</a>\
+							<div class="cmtcnt">\
+								<div class="cmt_left">\
+									<a href="" class="user">人人人</a>\
+									<span class="cmttxt">喜欢了这张图片</span>\
+								</div>\
+							</div>\
+						</li>\
+					</ul>\
+                    <div class="loading"><a href="javascript:;" class="nofocusBtn">点击加载更多</a></div>\
+					<div class="slideUp">\
+						<a href="javascript::">收起</a>\
+					</div>\
+				</div>',
+                messageList = $(this).parents('.messageList'),
+                hotPanle = messageList.find('.hotPanle');
+
+    if (hotPanle && hotPanle.length == 0) {
+        messageList.find('.review_pop').remove();
+        messageList.append(html);
+    }
+    else {
+        hotPanle.remove();
+    }
+});
+$('.review').on('click', function () {
+    var html = '<div class="review_pop relative reviewPanle">\
+					<i class="triange_top"  style="right: 35px;"></i>\
+					<div class="add clearfix">\
+						<div contenteditable="true" class="inputxt" maxlength="200"></div>\
+						<a href="javascript:;" class="fb_btn">发布</a>\
+					</div>\
+					<ul class="review_list marT20">\
+						<li class="clearfix">\
+							<a class="img_left">\
+								<img src="images/test.jpg" alt="">\
+							</a>\
+							<div class="cmtcnt">\
+								<div class="cmt_left">\
+									<a href="" class="user">人人人</a>\
+									<span class="cmttxt">评论评论评论内容评论评论评论内容评论评论评论内容评论评论评论内容评论评论评论内容评论评论评论内容评论评论评论内容评论评论评论内容评论评论评论内容评论评论评论内容评论评论评论内容评论评论评论内容评论评论评论内容评论评论评论内容评论评论评论内容</span>\
+								</div>\
+								<div class="cmtopt">\
+									<a class="cmt_link jh_tag" href="">加黑</a>\
+									<a class="cmt_link none" href="">删除</a>\
+									<a class="cmt_link" href="">回复</a>\
+								</div>\
+							</div>\
+						</li>\
+					</ul>\
+					<div class="slideUp">\
+						<a href="javascript::">收起</a>\
+					</div>\
+				</div>',
+                messageList = $(this).parents('.messageList'),
+                reviewPanle = $(this).parents('.messageList').find('.reviewPanle');
+
+    if (reviewPanle && reviewPanle.length == 0) {
+        messageList.find('.review_pop').remove();
+        messageList.append(html);
+    }
+    else {
+        reviewPanle.remove();
+    }
+});
+
+$(document).on('click', '.slideUp', function () {
+    $(this).parent().remove();
 });

@@ -69,5 +69,7 @@ namespace DSCM.ds_tbl_article
         }
 
         public string Article_type { get; set; }
+
+        public string Article_Pics { get; set; }
     }
 }

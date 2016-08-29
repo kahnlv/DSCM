@@ -27,9 +27,14 @@
                         <a href="javascript:;" class="m-head">
                             <img src="<%=u.User_Img %>" alt="">
                         </a>
-                        <a class="focusBtn" href="javascript:;" data-user="<%=u.User_Id %>">
-                            <%=u.Guanzhu == 0 ? "<b>+</b><span>关注</span>" : "<span>取消关注</span>" %>
-                        </a>
+                        <%if (u.Guanzhu == 0)
+                            { %>
+                        <a class="focusBtn" href="javascript:;" data-user="<%=u.User_Id %>"><b>+</b><span>关注</span></a>
+                        <%}
+                            else
+                            {%>
+                        <a class="focusBtn nofocusBtn" href="javascript:;" data-user="<%=u.User_Id %>">取消关注</a>
+                        <%} %>
                         <h3>
                             <a class="ttl" href="javascript:;" target="_blank"><%=u.User_Name %></a>
                         </h3>
@@ -70,14 +75,12 @@
                     }
                     else
                     { %>
-                <li class="blogitm">
-                暂无领域达人</li>
+                <li class="blogitm">暂无领域达人</li>
                 <%}
                     }
                     else
                     { %>
-                <li class="blogitm">
-                暂无领域达人</li>
+                <li class="blogitm">暂无领域达人</li>
                 <%}
                 %>
             </ul>

@@ -45,7 +45,7 @@ public partial class Reception_templates_default_quanzi_daren : Page
                 }
 
                 //userList = SQL.ReadAll<tbl_user>("tbl_user", " and user_recommend=1");
-                Count = SQL.Read("tbl_friend", " and [tf].[if_friend] = 1 and  user_id='" + Save("user_id").ToString() + "'");
+                Count = SQL.Read("tbl_friend tf", "  [tf].[if_friend] = 1 and  user_id='" + Save("user_id").ToString() + "'");
             }
         }
     }

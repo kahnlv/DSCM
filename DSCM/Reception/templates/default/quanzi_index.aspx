@@ -28,25 +28,48 @@
                 <a class="messageImg fl" href="javascript:;">
                     <img src="<%=m.user.User_Img %>" alt="<%=m.user.User_Name %>">
                 </a>
-
             </div>
             <div class="messageCont fr">
-                <a class="nick" href=""><%=m.user.User_Name %></a>
+                <a class="nick" href="javascript::"><%=m.user.User_Name %></a>
                 <div class="mainCont">
                     <div class="clearfix">
-                    <%if ((m.Article_Pic + "").Length > 0)
-                        { %>
-                    <a class="imgCont fl" href="javascript:;">
-                        <img src="<%=m.Article_Pic %>" alt="">
-                    </a>
-                    <%} %>
-                    <div class="txt">
-                        <p><a href="javascript:;"><%=m.Article_Title %></a></p>
-                        <p>
-                            <%=HttpUtility.UrlDecode(m.Article_Contents) %>
-                        </p>
-                    </div>
+                        <%if ((m.Article_Pic + "").Length > 0)
+                            { %>
+                        <div class="imgc">
+                            <a class="imgCont fl smallImg" href="javascript:;">
+                                <img src="<%=m.Article_Pic %>" alt="">
+                                <%if (m.Article_Pics.Length > 0)
+                                    { %>
+                                <span class="total"><%=m.Article_Pics.Split(',').Length + 1 %>
+                                </span>
+                                <%}%>
+                            </a>
+                            <ol class="bigImg none">
+                                <li>
+                                    <img src="<%=m.Article_Pic %>" alt="">
+                                    <a href="<%=m.Article_Pic %>" target="_blank" class="">查看大图</a>
+                                </li>
+                                <%if (m.Article_Pics.Length > 0)
+                                    {
+                                        foreach (var pic in m.Article_Pics.Split(','))
+                                        {
+                                %>
+                                <li>
+                                    <img src="<%=pic %>" alt="">
+                                    <a href="<%=pic %>" target="_blank" class="">查看大图</a>
+                                </li>
+                                <%}
+                                    } %>
+                            </ol>
                         </div>
+                        <%} %>
+                        <div class="txt">
+                            <p><a href="javascript:;"><%=m.Article_Title %></a></p>
+                            <p>
+                                <%=HttpUtility.UrlDecode(m.Article_Contents) %>
+                            </p>
+                        </div>
+                    </div>
                     <div class="opt">
                         <div class="optLeft">
                             <%if (m.bqs.Length > 0)
@@ -78,8 +101,8 @@
                             <%} %>
                         </div>
                     </div>
-        </div>
-        </div>
+                </div>
+            </div>
         </div>
         <%} %>
     </div>
@@ -95,7 +118,7 @@
                 <img src="/Reception/resource/new/images/headicon.png" alt="">
             </a>
             <div class="editCont fr">
-                <p class="nick" href="">昵称</p>
+                <p class="nick" href=""><%=Save("user_name").ToString()%></p>
                 <!--图片输入模块-->
                 <div class="editInputDiv marT20">
                     <div class="picUpload relative">

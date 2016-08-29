@@ -116,7 +116,7 @@ namespace dscm.Library.self
                     strmsg.Append(imgSrc);
                 }
                 catch
-                {}
+                { }
                 return strmsg.ToString();
             }
             catch { }
@@ -264,7 +264,7 @@ namespace dscm.Library.self
         /// <param name="str"></param>
         /// <param name="type">“JS（大写）,STR(大写)”</param>
         /// <param name="type">“只有JS 类型参数才会生效”</param>
-        public void PageWrite(string str, string type,string url)
+        public void PageWrite(string str, string type, string url)
         {
             try
             {
@@ -289,7 +289,7 @@ namespace dscm.Library.self
         {
             Response.Write("<script>location='" + url + "';</script>");
         }
-        public void Cookies(string key ,string value)
+        public void Cookies(string key, string value)
         {
             try
             {
@@ -330,11 +330,40 @@ namespace dscm.Library.self
         /// </summary>
         /// <param name="key"></param>
         /// <param name="obj"></param>
-        public void Save(string key,object obj)
+        public void Save(string key, object obj)
         {
-            Session.Timeout = 20;
-            Session[key] = obj;
+            if (null == obj)
+            {
+                Session.Timeout = 20;
+                Session[key] = obj;
+
+                HttpCookie cookie = HttpContext.Current.Request.Cookies[key];
+
+                if (null != cookie)
+                {
+                    cookie.Expires = DateTime.Now.AddDays(-1);
+                    HttpContext.Current.Response.Cookies.Set(cookie);
+                }
+            }
+            else
+            {
+                HttpCookie cookie = new HttpCookie(key);
+                cookie.Value = obj.ToString();
+                cookie.Expires = DateTime.Now.AddDays(120);
+
+                HttpContext.Current.Response.Cookies.Set(cookie);
+
+                if (null == HttpContext.Current.Request.Cookies[key])
+                {
+                    HttpContext.Current.Response.Cookies.Add(cookie);
+                }
+                else
+                {
+                    HttpContext.Current.Response.Cookies.Set(cookie);
+                }
+            }
         }
+
         public object Save(string key)
         {
             if (key.ToLower().Equals("clear"))
@@ -344,7 +373,32 @@ namespace dscm.Library.self
             }
             else
             {
-                return Session[key] == null ? "" : Session[key];
+                object value = "";
+
+                HttpCookie cookie = HttpContext.Current.Request.Cookies[key];
+
+                if (HttpContext.Current == null ||
+                    HttpContext.Current.Session == null || HttpContext.Current.Session[key] == null)
+                {
+                    if (null == cookie)
+                    {
+                        return "";
+                    }
+                    else
+                    {
+                        value = cookie.Value;
+                        Session[key] = value;
+                    }
+                }
+                else
+                {
+                    if (null != Session[key])
+                    {
+                        value = Session[key];
+                    }
+                }
+
+                return value;
             }
         }
 
@@ -374,9 +428,9 @@ namespace dscm.Library.self
         {
             get { return r.Next().ToString(); }
         }
-#region 存储自定义对象 <S></S>
+        #region 存储自定义对象 <S></S>
 
-        public void SelfObject<T>(string key,T obj)
+        public void SelfObject<T>(string key, T obj)
         {
             T model = Activator.CreateInstance<T>();
             Save(key, obj);
@@ -392,8 +446,8 @@ namespace dscm.Library.self
             return model;
         }
 
-#endregion
-#region 自定义存储字符串 <S></S>
+        #endregion
+        #region 自定义存储字符串 <S></S>
         /// <summary>
         /// 存储字符串
         /// </summary>
@@ -448,8 +502,8 @@ namespace dscm.Library.self
             catch { }
             return "";
         }
-#endregion
-#region 自定义存储object对象 <O></O>
+        #endregion
+        #region 自定义存储object对象 <O></O>
         /// <summary>
         /// 存储object对象
         /// </summary>
@@ -526,8 +580,8 @@ namespace dscm.Library.self
             catch { }
             return null;
         }
-#endregion
-#region 自定义存储ArrayList <A></A>
+        #endregion
+        #region 自定义存储ArrayList <A></A>
         /// <summary>
         /// 存储object对象
         /// </summary>
@@ -573,7 +627,7 @@ namespace dscm.Library.self
             return null;
         }
         #endregion
-#region 
+        #region 
         public string Form(string key)
         {
             try
@@ -603,7 +657,7 @@ namespace dscm.Library.self
                 if (querystring != null)
                 {
                     if (querystring.ContainsKey(key))
-                    {                       
+                    {
                         return querystring[key];
                     }
                 }
@@ -663,8 +717,8 @@ namespace dscm.Library.self
             }
             catch { }
         }
-#endregion
-#region 自定公共方法
+        #endregion
+        #region 自定公共方法
 
 
         public string Md5(string str)
@@ -806,6 +860,6 @@ namespace dscm.Library.self
             }
             catch { }
         }
-#endregion
+        #endregion
     }
 }
