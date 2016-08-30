@@ -592,6 +592,7 @@ namespace dscm.Tools.Sql
                     {
                         T model = Activator.CreateInstance<T>();
                         PropertyInfo[] pi = model.GetType().GetProperties();
+
                         for (int j = 0; j < pi.Length; j++)
                         {
                             for (int i = 0; i < sdr.FieldCount; i++)
@@ -599,7 +600,7 @@ namespace dscm.Tools.Sql
                                 if (pi[j].Name.ToLower() == sdr.GetName(i).ToLower())
                                 {
                                     object obj = sdr.GetValue(i);
-                                    pi[j].SetValue(model, obj.ToString(), null);
+                                    pi[j].SetValue(model, Convert.ChangeType(obj, pi[j].PropertyType), null);
                                 }
                             }
                         }

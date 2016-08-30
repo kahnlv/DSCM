@@ -10,6 +10,7 @@ using DSCM.ds_tbl_user_biaoqian;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DSCM.Reception
 {
@@ -167,7 +168,7 @@ namespace DSCM.Reception
             }
 
             user = SQL.ReadAll<tbl_user>(strSql);
-            
+
             if (null != user)
             {
                 foreach (var u in user)
@@ -229,8 +230,10 @@ namespace DSCM.Reception
             {
                 PageWrite(Newtonsoft.Json.JsonConvert.SerializeObject(al[0]), "STR");
             }
-            else {
-                if ((user_id + "").Length == 0) {
+            else
+            {
+                if ((user_id + "").Length == 0)
+                {
 
                 }
             }
@@ -688,5 +691,31 @@ namespace DSCM.Reception
             }
         }
 
+        public void review_DSCM()
+        {
+            string id = QueryString("id"),
+                pageindex = QueryString("pi"),
+                pagesize = QueryString("ps"),
+                plType = QueryString("t");
+            if ((id + "").Length > 0)
+            {
+                tbl_article_pl[] tap = SQL.ReadAll<tbl_article_pl>("tbl_article_pl [tap]",
+                    string.Format("[tap].[type] = {0} AND [tap].[IsDelete] = 0 AND [tap].[article_id]='{1}'", plType.Length == 0 ? "1" : plType, id));
+
+                int pi = 0, ps = 0;
+
+                int.TryParse(pageindex, out pi);
+                int.TryParse(pagesize, out ps);
+
+                tap = tap.Take(ps).Skip(pi * ps).ToArray();
+
+                foreach (var t in tap)
+                {
+                    t.user = SQL.Read<tbl_user>("tbl_user", string.Format("user_id = '{0}'", t.User_Id));
+                }
+
+                PageWrite(Newtonsoft.Json.JsonConvert.SerializeObject(tap), "STR");
+            }
+        }
     }
 }

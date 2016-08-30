@@ -448,38 +448,52 @@ $(document).on('click', '.bigImg', function () {
 });
 
 $('.hot').on('click', function (e) {
-    var html = ' <div class="review_pop relative hotPanle">\
+    var id = $(this).parents('.optRight').attr('data-id'),
+            messageList = $(this).parents('.messageList'),
+            hotPanle = messageList.find('.hotPanle');
+    if (hotPanle && hotPanle.length == 0) {
+        ajax_fun({ ds: 'quanzi', cm: 'review', id: id, pi: 0, ps: 10 }, function (data) {
+            var html = '';
+            if (data && data.length > 0) {
+                html = ' <div class="review_pop relative hotPanle">\
 					<i class="triange_top" style="right: 183px;"></i>\
-					<ul class="review_list marT20">\
-						<li class="clearfix">\
-							<a class="img_left">\
-								<img src="images/test.jpg" alt="">\
-							</a>\
-							<div class="cmtcnt">\
+					<ul class="review_list marT20">';
+                for (var i = 0, len = data.length; i < len; i++) {
+                    var item = data[i],
+                        user = item.user;
+
+                    html += '<li class="clearfix"><a class="img_left"><img src="' + user.User_Img + '" alt=""></a>';
+                    html += '<div class="cmtcnt">\
 								<div class="cmt_left">\
-									<a href="" class="user">人人人</a>\
-									<span class="cmttxt">喜欢了这张图片</span>\
+									<a href="" class="user">' + user.User_Name + '</a>\
+									<span class="cmttxt">喜欢了这篇文章</span>\
 								</div>\
-							</div>\
-						</li>\
-					</ul>\
-                    <div class="loading"><a href="javascript:;" class="nofocusBtn">点击加载更多</a></div>\
-					<div class="slideUp">\
+							</div></li>';
+                }
+                html += '</ul><div class="slideUp">\
 						<a href="javascript::">收起</a>\
 					</div>\
-				</div>',
-                messageList = $(this).parents('.messageList'),
-                hotPanle = messageList.find('.hotPanle');
+				</div>';
 
-    if (hotPanle && hotPanle.length == 0) {
-        messageList.find('.review_pop').remove();
-        messageList.append(html);
+
+
+                messageList.find('.review_pop').remove();
+                messageList.append(html);
+            }
+        }, '/Reception/index.aspx');
     }
     else {
-        hotPanle.remove();
+        if (hotPanle.is(':hidden')) {
+            hotPanle.show();
+        } else {
+            hotPanle.hide();
+        }
     }
 });
 $('.review').on('click', function () {
+    var id = $(this).parents('.optRight').attr('data-id'),
+                messageList = $(this).parents('.messageList'),
+                reviewPanle = $(this).parents('.messageList').find('.reviewPanle');
     var html = '<div class="review_pop relative reviewPanle">\
 					<i class="triange_top"  style="right: 35px;"></i>\
 					<div class="add clearfix">\
@@ -487,36 +501,49 @@ $('.review').on('click', function () {
 						<a href="javascript:;" class="fb_btn">发布</a>\
 					</div>\
 					<ul class="review_list marT20">\
-						<li class="clearfix">\
-							<a class="img_left">\
-								<img src="images/test.jpg" alt="">\
-							</a>\
-							<div class="cmtcnt">\
-								<div class="cmt_left">\
-									<a href="" class="user">人人人</a>\
-									<span class="cmttxt">评论评论评论内容评论评论评论内容评论评论评论内容评论评论评论内容评论评论评论内容评论评论评论内容评论评论评论内容评论评论评论内容评论评论评论内容评论评论评论内容评论评论评论内容评论评论评论内容评论评论评论内容评论评论评论内容评论评论评论内容</span>\
-								</div>\
-								<div class="cmtopt">\
-									<a class="cmt_link jh_tag" href="">加黑</a>\
-									<a class="cmt_link none" href="">删除</a>\
-									<a class="cmt_link" href="">回复</a>\
-								</div>\
-							</div>\
-						</li>\
 					</ul>\
 					<div class="slideUp">\
 						<a href="javascript::">收起</a>\
 					</div>\
-				</div>',
-                messageList = $(this).parents('.messageList'),
-                reviewPanle = $(this).parents('.messageList').find('.reviewPanle');
+				</div>';
 
     if (reviewPanle && reviewPanle.length == 0) {
         messageList.find('.review_pop').remove();
         messageList.append(html);
+        var reviewList = messageList.find('.review_list');
+        ajax_fun({ ds: 'quanzi', cm: 'review', id: id, pi: 0, ps: 10, t: 0 }, function (data) {
+            var lihtml = '';
+            if (data && data.length > 0) {
+                for (var i = 0, len = data.length; i < len; i++) {
+                    var item = data[i], user = item.user;
+                    lihtml += '<li class="clearfix">\
+							<a class="img_left">\
+								<img src="'+ user.User_Img + '" alt="">\
+							</a>\
+							<div class="cmtcnt">\
+								<div class="cmt_left">\
+									<a href="" class="user">'+ user.User_Name + '</a>\
+									<span class="cmttxt">'+ item.Content + '</span>\
+								</div>\
+								<div class="cmtopt">\
+									<a class="cmt_link jh_tag none" href="">加黑</a>\
+									<a class="cmt_link none" href="">删除</a>\
+									<a class="cmt_link none" href="">回复</a>\
+								</div>\
+							</div>\
+						</li>';
+                }
+
+                reviewList.append(lihtml);
+            }
+        }, '/Reception/index.aspx');
     }
     else {
-        reviewPanle.remove();
+        if (reviewPanle.is(':hidden')) {
+            reviewPanle.show();
+        } else {
+            reviewPanle.hide();
+        }
     }
 });
 
