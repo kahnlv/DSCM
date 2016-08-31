@@ -255,7 +255,7 @@ $('.publish').on('click', function () {
             success: function (result) {
                 if (result.success) {
                     console.log('添加成功喽');
-                    $('.publishBar').after(setContentHtml(arc_pic, arc_content, arc_title, '', arc_biaoqian ? arc_biaoqian.split(',') : '', result.msg, true));
+                    $('.publishBar').after(setContentHtml(arc_pic, arc_content, arc_title, result.user.User_Name, result.user.User_Img, arc_biaoqian ? arc_biaoqian.split(',') : '', result.msg, true, photos));
                     $('.editDiv,.mask').hide();
                     $('.publishBar').css('visibility', 'visible');
                 } else {
@@ -272,24 +272,41 @@ $('.cancle').on('click', function () {
     $('.tagInputDiv>:text').val('');
 });
 
-var setContentHtml = function (pic, content, title, nickname, tags, guid, isEdit) {
+var setContentHtml = function (pic, content, title, nickname, headImg, tags, guid, isEdit, photos) {
     var html = '<div class="messageList clearfix" data-id="' + guid + '">\
-            <a class="messageImg fl" href="">\
-                <img src="" alt="">\
-            </a>\
+            <div class="messageImgDiv relative">\
+                <a class="messageImg fl" href="">\
+                    <img src="' + headImg + '" alt="">\
+                </a>\
+            </div>\
             <div class="messageCont fr">\
                 <a class="nick" href="">' + nickname + '</a>\
-                <div class="mainCont">',
-                tag = '';
+                <div class="mainCont"><div class="clearfix">',
+                tag = '', ol = '';
     if (pic) {
-        html += '<a class="imgCont fl smallImg" href="javascript:;">\
-                        <img src="'+ pic + '" alt="">\
-                    </a>';
+        html += '<div class="imgc"><a class="imgCont fl smallImg" href="javascript:;">\
+                        <img src="' + pic + '" alt="">';
+
+        ol = '<ol class="bigImg none"><li><img src="' + pic + '" alt="">\
+                                    <a href="' + pic + '" target="_blank" class="">查看大图</a></li>';
+        if (photos.length > 0) {
+            var photo = photos.split(','), len = photo.length;
+            html += '<span class="total">' + (len + 1) + ' </span>';
+
+            for (var i = 0 ; i < len; i++) {
+                var item = photo[i];
+                ol += '<li><img src="' + item + '" alt="">\
+                                    <a href="' + item + '" target="_blank" class="">查看大图</a></li>';
+            }
+        }
+        ol += '</ol>';
+
+        html += '</a>' + ol + '</div>';
     }
     html += '<div class="txt">\
                         <p><a href="">'+ title + '</a></p>\
                         <p>'+ content + '</p>\
-                    </div>\
+                    </div></div>\
                     <div class="opt">\
                     <div class="optLeft">';
     for (var i = 0, len = tags.length; i < len; i++) {
@@ -466,7 +483,7 @@ $('.hot').on('click', function (e) {
                     html += '<div class="cmtcnt">\
 								<div class="cmt_left">\
 									<a href="" class="user">' + user.User_Name + '</a>\
-									<span class="cmttxt">喜欢了这篇文章</span>\
+									<span class="cmttxt">喜欢这篇文章</span>\
 								</div>\
 							</div></li>';
                 }
@@ -498,7 +515,7 @@ $('.review').on('click', function () {
 					<i class="triange_top"  style="right: 35px;"></i>\
 					<div class="add clearfix">\
 						<div contenteditable="true" class="inputxt" maxlength="200"></div>\
-						<a href="javascript:;" class="fb_btn">发布</a>\
+						<a href="javascript:;" data-id="'+ id + '" class="fb_btn">发布</a>\
 					</div>\
 					<ul class="review_list marT20">\
 					</ul>\
@@ -523,10 +540,10 @@ $('.review').on('click', function () {
 							<div class="cmtcnt">\
 								<div class="cmt_left">\
 									<a href="" class="user">'+ user.User_Name + '</a>\
-									<span class="cmttxt">'+ item.Content + '</span>\
+									<span class="cmttxt">'+ decodeURI(item.Article_Pl_Content) + '</span>\
 								</div>\
 								<div class="cmtopt">\
-									<a class="cmt_link jh_tag none" href="">加黑</a>\
+									<a class="cmt_link jh_tag"  style="display:none;" href="">加黑</a>\
 									<a class="cmt_link none" href="">删除</a>\
 									<a class="cmt_link none" href="">回复</a>\
 								</div>\
@@ -549,4 +566,40 @@ $('.review').on('click', function () {
 
 $(document).on('click', '.slideUp', function () {
     $(this).parent().remove();
+});
+
+$(document).on('click', '.fb_btn', function () {
+    var that = $(this), id = that.attr('data-id'),
+        value = that.prev('.inputxt').html();
+
+    ajax_fun({ act: 'review', con: encodeURI(value), aid: id }, function (result) {
+        if (result.success) {
+            user = result.user;
+            that.parents('.reviewPanle').find('.review_list').prepend('<li class="clearfix">\
+							<a class="img_left">\
+								<img src="'+ user.User_Img + '" alt="">\
+							</a>\
+							<div class="cmtcnt">\
+								<div class="cmt_left">\
+									<a href="" class="user">'+ user.User_Name + '</a>\
+									<span class="cmttxt">' + value + '</span>\
+								</div>\
+								<div class="cmtopt">\
+									<a class="cmt_link jh_tag" style="display:none;" href="">加黑</a>\
+									<a class="cmt_link none" href="">删除</a>\
+									<a class="cmt_link none" href="">回复</a>\
+								</div>\
+							</div>\
+						</li>');
+            var count = that.parents('.messageList').find('.optRight').find('.review').children('i').text();
+            if (count && count.length > 0) {
+                that.parents('.messageList').find('.optRight').find('.review').children('i').text(parseInt(count) + 1);
+            } else {
+                that.parents('.messageList').find('.optRight').find('.review').html('评论(1)');
+            }
+            that.prev('.inputxt').html('');
+        } else {
+            alert(result.msg);
+        }
+    });
 });

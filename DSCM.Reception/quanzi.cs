@@ -528,6 +528,8 @@ namespace DSCM.Reception
                     {
                         result.Add("success", true);
                         result.Add("msg", Guid);
+
+                        result.Add("user", SQL.Read<tbl_user>("tbl_user", "user_id = '" + user_id + "'"));
                     }
                     else
                     {
