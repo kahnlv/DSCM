@@ -26,9 +26,45 @@ public class circle : IHttpHandler, IReadOnlySessionState
             case "del":
                 Deleted(context);
                 break;
+            case "review":
+                Review(context);
+                break;
         }
         context.Response.ContentType = "text/plain";
         context.Response.Write("Hello World");
+    }
+
+    private void Review(HttpContext context)
+    {
+        string userid = getUserId(context), aid = context.Request["aid"], content = context.Request["con"];
+
+        if (userid.Length == 0 || (aid + "").Length == 0)
+        {
+            result.Add("success", false);
+            result.Add("msg", "非法操作");
+        }
+        else
+        {
+            int resultCode = 0;
+            string guid = "";
+            resultCode = Circle_DAL.LikeAdd(aid, userid, 0, content, out guid);
+
+            if (resultCode > 0)
+            {
+                var model = SQL.Read<DSCM.ds_tbl_user.tbl_user>("tbl_user", "user_id = '" + userid + "'");
+                result.Add("success", true);
+                result.Add("msg", "操作成功");
+                result.Add("guid", guid);
+                result.Add("user", model);
+            }
+            else
+            {
+                result.Add("success", false);
+                result.Add("msg", "操作失败");
+            }
+        }
+        context.Response.Write(Newtonsoft.Json.JsonConvert.SerializeObject(result));
+        context.Response.End();
     }
 
     private void Deleted(HttpContext context)
@@ -183,7 +219,8 @@ public class circle : IHttpHandler, IReadOnlySessionState
                 var model = SQL.Read<DSCM.ds_tbl_article_pl.tbl_article_pl>("tbl_article_pl", " and article_id='" + articleId + "' and type = 1 and user_id='" + userid + "'");
                 if (0 == model.Article_Pl_Id.Length)
                 {
-                    resultCode = Circle_DAL.LikeAdd(articleId, userid, 1);
+                    string guid = "";
+                    resultCode = Circle_DAL.LikeAdd(articleId, userid, 1, "", out guid);
                 }
                 else
                 {

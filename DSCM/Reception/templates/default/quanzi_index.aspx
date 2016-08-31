@@ -5,8 +5,8 @@
     <div class="leftMain">
         <ul class="publishBar clearfix">
             <li class="user relative"><span class="userIcon"></span>
-                <div class="userHover">上传头像</div>
-                <input type="file" class="head_upload"></li>
+                <%--<div class="userHover">上传头像</div>
+                <input type="file" class="head_upload"></li>--%>
             <li><a href="javascript:;" class="publishLink"><i class="publishIcon1"></i>
                 <p>文字</p>
             </a></li>
@@ -89,7 +89,7 @@
                             <%if ((Save("user_id") + "").Length > 0 && m.User_Id.Equals(Save("user_id")))
                                 {%>
                             <span><a href="javascript:;" class="edit none">编辑</a></span>
-                            <span><a href="javascript:;" class="deleted none">删除</a></span>
+                            <span><a href="javascript:;" class="deleted">删除</a></span>
                             <span><a href="javascript:;" class="review">评论<%=m.plnum > 0 ? string.Format("(<i>{0}</i>)",m.plnum):"" %></a></span>
                             <%}
                                 else

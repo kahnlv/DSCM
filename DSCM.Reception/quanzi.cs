@@ -528,6 +528,8 @@ namespace DSCM.Reception
                     {
                         result.Add("success", true);
                         result.Add("msg", Guid);
+
+                        result.Add("user", SQL.Read<tbl_user>("tbl_user", "user_id = '" + user_id + "'"));
                     }
                     else
                     {
@@ -700,7 +702,7 @@ namespace DSCM.Reception
             if ((id + "").Length > 0)
             {
                 tbl_article_pl[] tap = SQL.ReadAll<tbl_article_pl>("tbl_article_pl [tap]",
-                    string.Format("[tap].[type] = {0} AND [tap].[IsDelete] = 0 AND [tap].[article_id]='{1}'", plType.Length == 0 ? "1" : plType, id));
+                    string.Format("[tap].[type] = {0} AND [tap].[IsDelete] = 0 AND [tap].[article_id]='{1}' order by article_pl_time desc", plType.Length == 0 ? "1" : plType, id));
 
                 int pi = 0, ps = 0;
 
