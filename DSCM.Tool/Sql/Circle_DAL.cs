@@ -11,24 +11,21 @@ namespace dscm.Tools.Sql
 {
     public class Circle_DAL
     {
-        public static int LikeAdd(string aid, string userid, int type, string content, out string id)
+        public static int LikeAdd(string aid, string userid, int type)
         {
             SqlParameter[] param = {
                 new SqlParameter("@article_pl_id",SqlDbType.VarChar,50),
                 new SqlParameter("@article_id",SqlDbType.VarChar,50),
                 new SqlParameter("@user_id",SqlDbType.VarChar,50),
-                new SqlParameter("@type",SqlDbType.TinyInt),
-                new SqlParameter("@article_pl_content",SqlDbType.VarChar,50)
+                new SqlParameter("@type",SqlDbType.TinyInt)
             };
 
-            id = Guid.NewGuid().ToString();
-            param[0].Value = id;
+            param[0].Value = Guid.NewGuid().ToString();
             param[1].Value = aid;
             param[2].Value = userid;
             param[3].Value = type;
-            param[4].Value = content ?? "";
 
-            return SqlCon.ExecuteSql("INSERT INTO tbl_article_pl (article_pl_id, article_id, user_id, type,article_pl_content) VALUES(@article_pl_id, @article_id,@user_id,@type,@article_pl_content); UPDATE tbl_article set article_hot = ISNULL(article_hot,0) + 1 WHERE article_id = @article_id", param);
+            return SqlCon.ExecuteSql("INSERT INTO tbl_article_pl (article_pl_id, article_id, user_id, type) VALUES(@article_pl_id, @article_id,@user_id,@type); UPDATE tbl_article set article_hot = ISNULL(article_hot,0) + 1 WHERE article_id = @article_id", param);
         }
 
         public static int LikeUpdate(string plid, string userid, int opt, string aid)
