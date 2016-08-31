@@ -219,7 +219,8 @@ public class circle : IHttpHandler, IReadOnlySessionState
                 var model = SQL.Read<DSCM.ds_tbl_article_pl.tbl_article_pl>("tbl_article_pl", " and article_id='" + articleId + "' and type = 1 and user_id='" + userid + "'");
                 if (0 == model.Article_Pl_Id.Length)
                 {
-                    resultCode = Circle_DAL.LikeAdd(articleId, userid, 1);
+                    string guid = "";
+                    resultCode = Circle_DAL.LikeAdd(articleId, userid, 1, "", out guid);
                 }
                 else
                 {
