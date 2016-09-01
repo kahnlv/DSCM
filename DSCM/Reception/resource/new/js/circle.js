@@ -255,7 +255,7 @@ $('.publish').on('click', function () {
             success: function (result) {
                 if (result.success) {
                     console.log('添加成功喽');
-                    $('.publishBar').after(setContentHtml(arc_pic, arc_content, arc_title, result.user.User_Name, result.user.User_Img, arc_biaoqian ? arc_biaoqian.split(',') : '', result.msg, true, photos));
+                    $('.publishBar').after(setContentHtml(arc_pic, arc_content, arc_title, result.user.User_Name, result.user.User_Img, arc_biaoqian ? arc_biaoqian.split(',') : '', result.msg, true, photos, 0, 0, result.msg));
                     $('.editDiv,.mask').hide();
                     $('.publishBar').css('visibility', 'visible');
                 } else {
@@ -272,7 +272,7 @@ $('.cancle').on('click', function () {
     $('.tagInputDiv>:text').val('');
 });
 
-var setContentHtml = function (/**封面图*/pic, /**内容*/content, /**标题*/title, /**昵称*/nickname, /**头像*/headImg, /**标签*/tags, /**用户id*/guid, /**是否能编辑*/isEdit, /**图片集*/photos,/**热度*/hot, /**评论数*/review) {
+var setContentHtml = function (/**封面图*/pic, /**内容*/content, /**标题*/title, /**昵称*/nickname, /**头像*/headImg, /**标签*/tags, /**用户id*/guid, /**是否能编辑*/isEdit, /**图片集*/photos,/**热度*/hot, /**评论数*/review, /**文章ID*/aid) {
     var html = '<div class="messageList clearfix" data-id="' + guid + '">\
             <div class="messageImgDiv relative">\
                 <a class="messageImg fl" href="javascript::">\
@@ -317,8 +317,8 @@ var setContentHtml = function (/**封面图*/pic, /**内容*/content, /**标题*
     }
     if (isEdit) {
         html += '   </div>\
-                    <div class="optRight">\
-                        ' + (hot > 0 ? '<span><a href="">热度(' + hot + ')</a></span>' : '') + '\
+                    <div class="optRight" data-id="'+ aid + '">\
+                        ' + (hot > 0 ? '<span><a href="javascript:;" class="hot">热度(' + hot + ')</a></span>' : '') + '\
                         <span><a href="javascript:;" class="edit none">编辑</a>\
                         <span><a href="javascript:;" class="deleted">删除</a></span>\
                         <span><a href="javascript:;" class="review">评论' + (review > 0 ? '(' + review + ')' : '') + '</a></span>\
@@ -329,7 +329,7 @@ var setContentHtml = function (/**封面图*/pic, /**内容*/content, /**标题*
     </div>';
     } else {
         html += '   </div>\
-                    <div class="optRight">\
+                    <div class="optRight" data-id="' + aid + '">\
                         <span><a href="javascript::">热度(' + (hot > 0 ? '(' + hot + ')' : '') + ')</a></span>\
                         <span><a href="javascript::">评论' + (review > 0 ? '(' + review + ')' : '') + '</a></span>\
                         <span><a href="javascript:;"><i class="zanIcon">赞</i></a></span>\
@@ -360,7 +360,7 @@ $(document).on('click.like', '.zanIcon', function () {
                 if ($hot.length > 0 && !isNaN(hot)) {
                     $hot.children('i').text(hot++);
                 } else {
-                    $optRight.html('<span><a href="javascript" class="hot">热度(<i>1</i>)</a></span>' + $optRight.html());
+                    $optRight.html('<span><a href="javascript:;" class="hot">热度(<i>1</i>)</a></span>' + $optRight.html());
                 }
             }
         } else {
@@ -643,7 +643,7 @@ $(window).scroll(function () {
                             for (var i = 0, len = data.length; i < len; i++) {
                                 item = data[i];
                                 user = item.user;
-                                html += setContentHtml(item.Article_Pic, unescape(item.Article_Contents), item.Article_Title, user.User_Name, user.User_Img, item.bqs, user.User_Id, user.User_Id == item.User_Id, item.Article_Pics, item.Article_Hot, item.plnum);
+                                html += setContentHtml(item.Article_Pic, unescape(item.Article_Contents), item.Article_Title, user.User_Name, user.User_Img, item.bqs, user.User_Id, user.User_Id == item.User_Id, item.Article_Pics, item.Article_Hot, item.plnum,item.Article_Id);
                             }
                             _this.attr('data-page', parseInt(pageindex) + 1).html('<div>加载更多。。。</div>').before(html);
                         } else {

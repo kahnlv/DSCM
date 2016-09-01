@@ -21,10 +21,6 @@ namespace dscm.Library
             }
             catch (Exception ex)
             {
-
-            }
-            finally
-            {
                 MyCon.Close();
                 MyCon.Dispose();
             }
@@ -57,18 +53,11 @@ namespace dscm.Library
                 SqlCommand myCom = new SqlCommand(sql, MyCon, SqlTra);
                 myCom.CommandTimeout = 0;
                 SqlDataReader sdr = myCom.ExecuteReader();
-                MyCon.Close();
-                MyCon.Dispose();
                 return sdr;
             }
             catch (Exception ex)
             {
                 return null;
-            }
-            finally
-            {
-                MyCon.Close();
-                MyCon.Dispose();
             }
         }
 
@@ -81,16 +70,9 @@ namespace dscm.Library
                 int i = myCom.ExecuteNonQuery();
                 myCom.Dispose();
                 SqlTra.Commit();
-                MyCon.Close();
-                MyCon.Dispose();
                 return i;
             }
             catch { return 0; }
-            finally
-            {
-                MyCon.Close();
-                MyCon.Dispose();
-            }
         }
 
         /// <summary>

@@ -93,7 +93,14 @@ namespace dscm.Tools.Sql
                 }
                 else
                 {
-                    sql = sql + " from " + table + " where " + where;
+                    if (where.Length > 0)
+                    {
+                        sql = sql + " from " + table + " where " + where;
+                    }
+                    else
+                    {
+                        sql = sql + " from " + table;
+                    }
                 }
                 Sql = sql;
                 SqlCon sc = new SqlCon();
@@ -155,7 +162,14 @@ namespace dscm.Tools.Sql
                 }
                 else
                 {
-                    sql = sql + _s + " from " + table + " where " + where;
+                    if (where.Length > 0)
+                    {
+                        sql = sql + _s + " from " + table + " where " + where;
+                    }
+                    else
+                    {
+                        sql = sql + _s + " from " + table;
+                    }
                 }
                 Sql = sql;
                 SqlCon sc = new SqlCon();
@@ -249,7 +263,10 @@ namespace dscm.Tools.Sql
                 }
                 else
                 {
-                    sql += " where " + where;
+                    if (where.Length > 0)
+                    {
+                        sql += " where " + where;
+                    }
                 }
 
                 int count = 0;
@@ -463,7 +480,14 @@ namespace dscm.Tools.Sql
                 }
                 else
                 {
-                    sql = sql + _s + " from " + table + " where " + where;
+                    if (where.Length > 0)
+                    {
+                        sql = sql + _s + " from " + table + " where " + where;
+                    }
+                    else
+                    {
+                        sql = sql + _s + " from " + table;
+                    }
                 }
                 Sql = sql;
                 SqlCon sc = new SqlCon();
@@ -521,7 +545,14 @@ namespace dscm.Tools.Sql
                 }
                 else
                 {
-                    sql = sql + " from " + table + " where " + where;
+                    if (where.Length > 0)
+                    {
+                        sql = sql + " from " + table + " where " + where;
+                    }
+                    else
+                    {
+                        sql = sql + " from " + table;
+                    }
                 }
 
                 SqlCon sc = new SqlCon();
@@ -581,7 +612,14 @@ namespace dscm.Tools.Sql
                 }
                 else
                 {
-                    sql = sql + " from " + table + " where " + where;
+                    if (where.Length > 0)
+                    {
+                        sql = sql + " from " + table + " where " + where;
+                    }
+                    else
+                    {
+                        sql = sql + " from " + table;
+                    }
                 }
                 sc = new SqlCon();
                 SqlDataReader sdr = sc.Read(sql);
@@ -703,7 +741,14 @@ namespace dscm.Tools.Sql
                     }
                     else
                     {
-                        sql = "update " + table + " set " + _s + " where " + where;
+                        if (where.Length > 0)
+                        {
+                            sql = "update " + table + " set " + _s + " where " + where;
+                        }
+                        else
+                        {
+                            sql = "update " + table + " set " + _s;
+                        }
                     }
 
                     Sql = sql;
@@ -733,7 +778,14 @@ namespace dscm.Tools.Sql
                 }
                 else
                 {
-                    sql = "delete from " + table + " where " + where;
+                    if (where.Length > 0)
+                    {
+                        sql = "delete from " + table + " where " + where;
+                    }
+                    else
+                    {
+                        sql = "delete from " + table;
+                    }
                 }
                 SqlCon sc = new SqlCon();
                 int ii = sc.UpLoad(sql);
