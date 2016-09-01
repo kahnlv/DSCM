@@ -571,6 +571,7 @@ namespace dscm.Tools.Sql
         /// <returns></returns>
         public static T[] ReadAll<T>(string table, string where)
         {
+            SqlCon sc = null;
             try
             {
                 string sql = "select * ";
@@ -582,8 +583,7 @@ namespace dscm.Tools.Sql
                 {
                     sql = sql + " from " + table + " where " + where;
                 }
-
-                SqlCon sc = new SqlCon();
+                sc = new SqlCon();
                 SqlDataReader sdr = sc.Read(sql);
                 ArrayList _al = new ArrayList();
                 if (sdr != null)
@@ -617,7 +617,14 @@ namespace dscm.Tools.Sql
                 }
                 return t;
             }
-            catch (Exception ex) { if (PageConfig.DEBUG.Equals("1")) { Extion = ex.ToString(); } }
+            catch (Exception ex)
+            {
+                if (PageConfig.DEBUG.Equals("1")) { Extion = ex.ToString(); }
+                if (null != sc)
+                {
+                    sc.Close();
+                }
+            }
             return null;
         }
         /// <summary>
@@ -698,7 +705,7 @@ namespace dscm.Tools.Sql
                     {
                         sql = "update " + table + " set " + _s + " where " + where;
                     }
-                    
+
                     Sql = sql;
                     SqlCon sc = new SqlCon();
                     int ii = sc.UpLoad(sql);

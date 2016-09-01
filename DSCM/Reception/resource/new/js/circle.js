@@ -40,7 +40,7 @@ $('.publishLink').bind('click', function () {
 });
 
 //=========显示名片=========
-$('.messageImg, .nick').on('mouseover', function (e) {
+$('.leftMain .messageImg,.leftMain .nick').on('mouseover', function (e) {
     var userid = $(this).parents('.messageList').attr('data-user'), param = { 'act': 'getInfo', 'uid': userid }, that = $(this);
     if (!$('.popup').html()) {
         ajax_fun(param, function (result) {
@@ -272,15 +272,15 @@ $('.cancle').on('click', function () {
     $('.tagInputDiv>:text').val('');
 });
 
-var setContentHtml = function (pic, content, title, nickname, headImg, tags, guid, isEdit, photos) {
+var setContentHtml = function (/**封面图*/pic, /**内容*/content, /**标题*/title, /**昵称*/nickname, /**头像*/headImg, /**标签*/tags, /**用户id*/guid, /**是否能编辑*/isEdit, /**图片集*/photos,/**热度*/hot, /**评论数*/review) {
     var html = '<div class="messageList clearfix" data-id="' + guid + '">\
             <div class="messageImgDiv relative">\
-                <a class="messageImg fl" href="">\
+                <a class="messageImg fl" href="javascript::">\
                     <img src="' + headImg + '" alt="">\
                 </a>\
             </div>\
             <div class="messageCont fr">\
-                <a class="nick" href="">' + nickname + '</a>\
+                <a class="nick" href="javascript::">' + nickname + '</a>\
                 <div class="mainCont"><div class="clearfix">',
                 tag = '', ol = '';
     if (pic) {
@@ -304,21 +304,24 @@ var setContentHtml = function (pic, content, title, nickname, headImg, tags, gui
         html += '</a>' + ol + '</div>';
     }
     html += '<div class="txt">\
-                        <p><a href="">'+ title + '</a></p>\
+                        <p><a href="javascript::">' + title + '</a></p>\
                         <p>'+ content + '</p>\
                     </div></div>\
                     <div class="opt">\
                     <div class="optLeft">';
-    for (var i = 0, len = tags.length; i < len; i++) {
-        tag = tags[i];
-        html += '<span><a href="">' + (i == 0 ? '<i class="bqIcon"></i>' : '') + tag + '</a></span>';
+    if (tags && tags.length > 0) {
+        for (var i = 0, len = tags.length; i < len; i++) {
+            tag = tags[i];
+            html += '<span><a href="">' + (i == 0 ? '<i class="bqIcon"></i>' : '') + tag + '</a></span>';
+        }
     }
     if (isEdit) {
         html += '   </div>\
                     <div class="optRight">\
-                        <span><a href="javascript:;" class="edit">编辑</a>\
+                        ' + (hot > 0 ? '<span><a href="">热度(' + hot + ')</a></span>' : '') + '\
+                        <span><a href="javascript:;" class="edit none">编辑</a>\
                         <span><a href="javascript:;" class="deleted">删除</a></span>\
-                        <span><a href="javascript:;" class="review">评论</a></span>\
+                        <span><a href="javascript:;" class="review">评论' + (review > 0 ? '(' + review + ')' : '') + '</a></span>\
                     </div>\
                 </div>\
             </div>\
@@ -327,8 +330,8 @@ var setContentHtml = function (pic, content, title, nickname, headImg, tags, gui
     } else {
         html += '   </div>\
                     <div class="optRight">\
-                        <span><a href="">热度(0)</a></span>\
-                        <span><a href="">评论(0)</a></span>\
+                        <span><a href="javascript::">热度(' + (hot > 0 ? '(' + hot + ')' : '') + ')</a></span>\
+                        <span><a href="javascript::">评论' + (review > 0 ? '(' + review + ')' : '') + '</a></span>\
                         <span><a href="javascript:;"><i class="zanIcon">赞</i></a></span>\
                     </div>\
                 </div>\
@@ -379,7 +382,7 @@ $(document).on('click.delete', '.deleted', function () {
 });
 
 
-var ajax_fun = function (param, callback, url) {
+var ajax_fun = function (param, callback, url, error) {
     if (!url) {
         url = '/ajax/circle.ashx'
     }
@@ -389,7 +392,8 @@ var ajax_fun = function (param, callback, url) {
         success: function (result) {
             (callback && typeof (callback) === 'function') && callback(result);
         },
-        error: function () {
+        error: function (errormsg) {
+            (error && typeof (error) === 'function') && error(errormsg);
         }
     });
 }
@@ -464,7 +468,7 @@ $(document).on('click', '.bigImg', function () {
     $(this).siblings('.smallImg').show();
 });
 
-$('.hot').on('click', function (e) {
+$(document).on('click', '.hot', function (e) {
     var id = $(this).parents('.optRight').attr('data-id'),
             messageList = $(this).parents('.messageList'),
             hotPanle = messageList.find('.hotPanle');
@@ -507,7 +511,7 @@ $('.hot').on('click', function (e) {
         }
     }
 });
-$('.review').on('click', function () {
+$(document).on('click', '.review', function () {
     var id = $(this).parents('.optRight').attr('data-id'),
                 messageList = $(this).parents('.messageList'),
                 reviewPanle = $(this).parents('.messageList').find('.reviewPanle');
@@ -528,12 +532,24 @@ $('.review').on('click', function () {
         messageList.find('.review_pop').remove();
         messageList.append(html);
         var reviewList = messageList.find('.review_list');
-        ajax_fun({ ds: 'quanzi', cm: 'review', id: id, pi: 0, ps: 10, t: 0 }, function (data) {
-            var lihtml = '';
-            if (data && data.length > 0) {
-                for (var i = 0, len = data.length; i < len; i++) {
-                    var item = data[i], user = item.user;
-                    lihtml += '<li class="clearfix">\
+        setReviewHtml(id, 0, 10, 0, reviewList);
+    }
+    else {
+        if (reviewPanle.is(':hidden')) {
+            reviewPanle.show();
+        } else {
+            reviewPanle.hide();
+        }
+    }
+});
+
+var setReviewHtml = function (id, pi, ps, t, reviewList) {
+    ajax_fun({ ds: 'quanzi', cm: 'review', id: id, pi: pi, ps: ps, t: t }, function (data) {
+        var lihtml = '', reviewLoad = reviewList.next('.reviewLoad');
+        if (data && data.length > 0) {
+            for (var i = 0, len = data.length; i < len; i++) {
+                var item = data[i], user = item.user;
+                lihtml += '<li class="clearfix">\
 							<a class="img_left">\
 								<img src="'+ user.User_Img + '" alt="">\
 							</a>\
@@ -549,19 +565,26 @@ $('.review').on('click', function () {
 								</div>\
 							</div>\
 						</li>';
-                }
-
-                reviewList.append(lihtml);
             }
-        }, '/Reception/index.aspx');
-    }
-    else {
-        if (reviewPanle.is(':hidden')) {
-            reviewPanle.show();
+            pi += 1;
+            reviewList.append(lihtml);
+            if (reviewLoad.length == 0) {
+                reviewList.after('<div class="loading reviewLoad" data-page="' + pi + '">点击加载更多。。。</div>');
+            } else {
+                reviewLoad.attr('data-page', pi);
+            }
         } else {
-            reviewPanle.hide();
+            reviewLoad.html('到底了~').removeClass('reviewLoad');
         }
-    }
+    }, '/Reception/index.aspx');
+}
+
+$(document).on('click', '.reviewLoad', function () {
+    var pi = parseInt($(this).attr('data-page')),
+        id = $(this).parents('.messageList').find('.optRight').attr('data-id'),
+        reviewList = $(this).siblings('.review_list');
+
+    setReviewHtml(id, pi, 10, 0, reviewList);
 });
 
 $(document).on('click', '.slideUp', function () {
@@ -595,11 +618,44 @@ $(document).on('click', '.fb_btn', function () {
             if (count && count.length > 0) {
                 that.parents('.messageList').find('.optRight').find('.review').children('i').text(parseInt(count) + 1);
             } else {
-                that.parents('.messageList').find('.optRight').find('.review').html('评论(1)');
+                that.parents('.messageList').find('.optRight').find('.review').html('评论(<i>1</i>)');
             }
             that.prev('.inputxt').html('');
         } else {
             alert(result.msg);
         }
     });
+});
+
+$(window).scroll(function () {
+    var _this = $('.index'), pageindex = _this.attr('data-page'), tips = _this.find('div').text();
+    if (_this.length > 0 && tips != '到底了~') {
+        if ($(document).scrollTop() >= $(document).height() - $(window).height()) {
+            console.log(_this.find('span').length)
+            if (_this.find('span').length == 0) {
+                _this.html('<span class="color1"></span><span class="color2"></span><span class="color3"></span><span class="color4"></span><span class="color5"></span>');
+                ajax_fun({ ds: 'quanzi', cm: 'page', pageindex: pageindex },
+                    function (data) {
+                        var item,
+                            user,
+                            html = '';
+                        if (data && data.length > 0) {
+                            for (var i = 0, len = data.length; i < len; i++) {
+                                item = data[i];
+                                user = item.user;
+                                html += setContentHtml(item.Article_Pic, unescape(item.Article_Contents), item.Article_Title, user.User_Name, user.User_Img, item.bqs, user.User_Id, user.User_Id == item.User_Id, item.Article_Pics, item.Article_Hot, item.plnum);
+                            }
+                            _this.attr('data-page', parseInt(pageindex) + 1).html('<div>加载更多。。。</div>').before(html);
+                        } else {
+                            _this.html('<div>到底了~</div>');
+                        }
+                    },
+                    '/Reception/index.aspx',
+                    function (error) {
+                        console.log(error);
+                        _this.html('<div>服务器有点忙或您的网络断开了，请重新尝试</div>');
+                    });
+            }
+        }
+    }
 });

@@ -89,7 +89,7 @@
                             <%if ((Save("user_id") + "").Length > 0 && m.User_Id.Equals(Save("user_id")))
                                 {%>
                             <span><a href="javascript:;" class="edit none">编辑</a></span>
-                            <span><a href="javascript:;" class="deleted none">删除</a></span>
+                            <span><a href="javascript:;" class="deleted">删除</a></span>
                             <span><a href="javascript:;" class="review">评论<%=m.plnum > 0 ? string.Format("(<i>{0}</i>)",m.plnum):"" %></a></span>
                             <%}
                                 else
@@ -104,7 +104,9 @@
                 </div>
             </div>
         </div>
-        <%} %>
+        <%}%>
+        <!-- 加载条 -->
+        <div class="loading index" data-page="1">加载更多。。。</div>
     </div>
 
     <%=model.ReadModel("/Reception/templates/default/public/side.aspx?ds=info")%>

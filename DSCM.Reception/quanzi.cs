@@ -25,8 +25,45 @@ namespace DSCM.Reception
 
         public ArrayList index_DSCM()
         {
+            int pageindex = 0;
+
+            int.TryParse(QueryString("pageindex"), out pageindex);
+
             ArrayList al = new ArrayList();
-            tbl_article[] articles = SQL.ReadAll<tbl_article>("tbl_article", " order by article_times desc", 10);
+            tbl_article[] articles = SQL.ReadAll<tbl_article>("tbl_article", " order by article_times desc");
+
+            articles = articles.Skip(pageindex * 10).Take(10).ToArray();
+
+            foreach (tbl_article article in articles)
+            {
+                article.plnum = SQL.Read("tbl_article_pl", " and article_id='" + article.Article_Id + "' and type = 0");
+                article.user = SQL.Read<tbl_user>("tbl_user", " and user_id='" + article.User_Id + "'");
+                article.bqs = article.Article_Biaoqian.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                article.hot = SQL.Read("tbl_article_pl", " and article_id='" + article.Article_Id + "' and type = 1 and IsDelete = 0");
+                article.isLike = SQL.Read("tbl_article_pl", " and article_id='" + article.Article_Id + "' and type = 1 and IsDelete = 0 and user_id='" + user_id + "'") > 0;
+            }
+            if (pageindex > 0)
+            {
+                PageWrite(Newtonsoft.Json.JsonConvert.SerializeObject(articles), "STR");
+            }
+            else
+            {
+                al.Add(articles);
+            }
+
+            return al;
+        }
+        public void page_DSCM()
+        {
+            int pageindex = 0;
+
+            int.TryParse(QueryString("pageindex"), out pageindex);
+
+            ArrayList al = new ArrayList();
+            tbl_article[] articles = SQL.ReadAll<tbl_article>("tbl_article", " order by article_times desc");
+
+            articles = articles.Skip(pageindex * 10).Take(10).ToArray();
+
             foreach (tbl_article article in articles)
             {
                 article.plnum = SQL.Read("tbl_article_pl", " and article_id='" + article.Article_Id + "' and type = 0");
@@ -36,8 +73,7 @@ namespace DSCM.Reception
                 article.isLike = SQL.Read("tbl_article_pl", " and article_id='" + article.Article_Id + "' and type = 1 and IsDelete = 0 and user_id='" + user_id + "'") > 0;
             }
 
-            al.Add(articles);
-            return al;
+            PageWrite(Newtonsoft.Json.JsonConvert.SerializeObject(articles), "STR");
         }
 
         public ArrayList arcticle_DSCM()
@@ -709,7 +745,7 @@ namespace DSCM.Reception
                 int.TryParse(pageindex, out pi);
                 int.TryParse(pagesize, out ps);
 
-                tap = tap.Take(ps).Skip(pi * ps).ToArray();
+                tap = tap.OrderByDescending(m => m.Article_Pl_Time).Skip(pi * ps).Take(ps).ToArray();
 
                 foreach (var t in tap)
                 {

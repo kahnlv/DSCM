@@ -19,8 +19,14 @@ namespace dscm.Library
                 MyCon.Open();
                 SqlTra = MyCon.BeginTransaction();//开始事务
             }
-            catch
+            catch (Exception ex)
             {
+
+            }
+            finally
+            {
+                MyCon.Close();
+                MyCon.Dispose();
             }
         }
 
@@ -29,14 +35,18 @@ namespace dscm.Library
             try
             {
                 MyCon.Close();
+                MyCon.Dispose();
             }
             catch
             {
                 SqlTra.Rollback();
+                MyCon.Close();
+                MyCon.Dispose();
             }
             finally
             {
-                
+                MyCon.Close();
+                MyCon.Dispose();
             }
         }
 
@@ -47,11 +57,18 @@ namespace dscm.Library
                 SqlCommand myCom = new SqlCommand(sql, MyCon, SqlTra);
                 myCom.CommandTimeout = 0;
                 SqlDataReader sdr = myCom.ExecuteReader();
+                MyCon.Close();
+                MyCon.Dispose();
                 return sdr;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return null;
+            }
+            finally
+            {
+                MyCon.Close();
+                MyCon.Dispose();
             }
         }
 
@@ -64,9 +81,16 @@ namespace dscm.Library
                 int i = myCom.ExecuteNonQuery();
                 myCom.Dispose();
                 SqlTra.Commit();
+                MyCon.Close();
+                MyCon.Dispose();
                 return i;
             }
             catch { return 0; }
+            finally
+            {
+                MyCon.Close();
+                MyCon.Dispose();
+            }
         }
 
         /// <summary>
@@ -74,7 +98,8 @@ namespace dscm.Library
         /// </summary>
         /// <param name="sqlStr">SQL语句(用在增 删 改)</param>
         /// <returns>影响的记录数</returns>
-        public static int ExecuteSql(string sqlStr, SqlParameter[] paras) {
+        public static int ExecuteSql(string sqlStr, SqlParameter[] paras)
+        {
             using (SqlConnection conn = new SqlConnection(PageConfig.SqlCon))
             {
                 using (SqlCommand cmd = new SqlCommand())
