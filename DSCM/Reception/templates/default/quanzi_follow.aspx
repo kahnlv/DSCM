@@ -40,24 +40,19 @@
                                 <a href="javascript:;" class="xtag" target="_blank"><%=m.User_Name %></a>
                             </em>
                         </h4>
-                        <p class="xtag">02/28 17:38更新</p>
+                        <p class="xtag"><%= m.Update_Time.HasValue ? m.Update_Time.Value.ToString("yyyy/MM/dd HH:mm") : "未" %>更新</p>
                     </div>
                     <a href="javascript:;" class="no_focus" title="取消关注">-</a>
                 </li>
                 <%}
                     }
-                    else
-                    {%>
-                <li>暂无关注好友
-                </li>
-                <%}
-                    }
-                    else
-                    {%>
-                <li>暂无关注好友
-                </li>
-                <%} %>
+                }%>
             </ul>
+             <!-- 加载条 -->
+            <%if (null != friend && friend.Count() == 20)
+                { %>
+            <div class="loading follow" data-page="1" data-key="">加载更多。。。</div>
+            <%} %>
         </div>
         <div class="searchCol">
             <div class="ssch clearfix">

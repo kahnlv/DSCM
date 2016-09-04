@@ -82,9 +82,9 @@
                                 }%>
                         </div>
                         <div class="optRight" data-id="<%=m.Article_Id %>">
-                            <%if (m.hot > 0)
+                            <%if (m.Article_Hot > 0)
                                 { %>
-                            <span><a href="javascript:;" class="hot">热度(<i><%=m.hot %></i>)</a></span>
+                            <span><a href="javascript:;" class="hot">热度(<i><%=m.Article_Hot %></i>)</a></span>
                             <%} %>
                             <%if ((Save("user_id") + "").Length > 0 && m.User_Id.Equals(Save("user_id")))
                                 {%>
@@ -106,7 +106,10 @@
         </div>
         <%}%>
         <!-- 加载条 -->
+        <%if (null != articles && articles.Count() == 10)
+            { %>
         <div class="loading index" data-page="1">加载更多。。。</div>
+        <%} %>
     </div>
 
     <%=model.ReadModel("/Reception/templates/default/public/side.aspx?ds=info")%>

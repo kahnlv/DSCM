@@ -6,6 +6,7 @@ using dscm.Library;
 using System.Data.SqlClient;
 using System.Reflection;
 using DSCM.Config;
+using System.Data;
 
 namespace dscm.Tools.Sql
 {
@@ -24,55 +25,42 @@ namespace dscm.Tools.Sql
         public static void CreadSql(string name, string tbl_doc, ArrayList colum, ArrayList type_length, ArrayList doc)
         {
             string sql = "";
-            SqlCon sc = new SqlCon();
-            if (sc != null)
+            if (colum.Count == type_length.Count && type_length.Count == doc.Count)
             {
-                if (colum.Count == type_length.Count && type_length.Count == doc.Count)
+                sql = "select count(*) from [table] where table_name = '" + name + "'";
+                object count = SqlCon.GetScalar(sql);
+                bool bl = false;
+                if (null == count) { bl = false; }
+                else
                 {
-                    sql = "select count(*) from [table] where table_name = '" + name + "'";
-                    SqlDataReader sdr = sc.Read(sql);
-                    bool bl = false;
-                    if (sdr == null) { bl = false; }
-                    else
+                    bl = true;
+                }
+
+                if (bl)
+                {
+                    string guid = Guid.NewGuid().ToString();
+                    sql = "insert into [table] (table_id,table_name,type) values ('" + guid + "','" + name + "','" + tbl_doc + "')";
+                    SqlCon.UpLoad(sql);
+                    for (int i = 0; i < colum.Count; i++)
                     {
-                        while (sdr.Read())
-                        {
-                            if (sdr.GetValue(0).ToString().Equals("0"))
-                            {
-                                bl = true;
-                            }
-                        }
-                        sdr.Close();
-                        sdr.Dispose();
+                        sql = "insert into Columns(Columns_id,Columns_name,table_id,type,type_length,doc)"
+                        + "values"
+                        + "(newid(),'" + colum[i] + "','" + guid + "','varchar','" + type_length[i] + "','" + doc[i] + "')";
+                        SqlCon.UpLoad(sql);
                     }
 
-                    if (bl)
+
+                    sql = "CREATE TABLE [dscm_" + name + "]("
+                    + " [dscm_" + name + "_id] [varchar](50) COLLATE Chinese_PRC_CI_AS NOT NULL,";
+                    for (int i = 0; i < colum.Count; i++)
                     {
-                        string guid = Guid.NewGuid().ToString();
-                        sql = "insert into [table] (table_id,table_name,type) values ('" + guid + "','" + name + "','" + tbl_doc + "')";
-                        sc.UpLoad(sql);
-                        for (int i = 0; i < colum.Count; i++)
-                        {
-                            sql = "insert into Columns(Columns_id,Columns_name,table_id,type,type_length,doc)"
-                            + "values"
-                            + "(newid(),'" + colum[i] + "','" + guid + "','varchar','" + type_length[i] + "','" + doc[i] + "')";
-                            sc.UpLoad(sql);
-                        }
 
-
-                        sql = "CREATE TABLE [dscm_" + name + "]("
-                        + " [dscm_" + name + "_id] [varchar](50) COLLATE Chinese_PRC_CI_AS NOT NULL,";
-                        for (int i = 0; i < colum.Count; i++)
-                        {
-
-                            sql += " [" + colum[i] + "] [varchar](" + type_length[i] + ") COLLATE Chinese_PRC_CI_AS NULL,";
-                        }
-                        sql += " [dscm_type] [varchar](50) COLLATE Chinese_PRC_CI_AS NULL,)";
-                        sc.UpLoad(sql);
+                        sql += " [" + colum[i] + "] [varchar](" + type_length[i] + ") COLLATE Chinese_PRC_CI_AS NULL,";
                     }
+                    sql += " [dscm_type] [varchar](50) COLLATE Chinese_PRC_CI_AS NULL,)";
+                    SqlCon.UpLoad(sql);
                 }
             }
-            sc.Close();
         }
 
         /// <summary>
@@ -103,29 +91,27 @@ namespace dscm.Tools.Sql
                     }
                 }
                 Sql = sql;
-                SqlCon sc = new SqlCon();
-                SqlDataReader sdr = sc.Read(sql);
-                ArrayList _al = new ArrayList();
-
-                if (sdr != null)
+                DataSet ds = SqlCon.Read(sql);
+                if (0 < ds.Tables[0].Rows.Count)
                 {
-                    while (sdr.Read())
+                    string columName = "";
+                    foreach (DataRow dr in ds.Tables[0].Rows)
                     {
-                        PropertyInfo[] pi = model.GetType().GetProperties();
-                        for (int j = 0; j < pi.Length; j++)
+                        PropertyInfo[] proInfo = model.GetType().GetProperties();
+
+                        foreach (DataColumn col in dr.Table.Columns)
                         {
-                            for (int i = 0; i < sdr.FieldCount; i++)
+                            columName = col.ColumnName;
+                            foreach (var p in proInfo)
                             {
-                                if (pi[j].Name.ToLower() == sdr.GetName(i).ToLower())
+                                if (columName.ToLower().Equals(p.Name.ToLower()))
                                 {
-                                    object obj = sdr.GetValue(i);
-                                    pi[j].SetValue(model, obj.ToString(), null);
+                                    object value = dr[columName];
+                                    p.SetValue(model, HConvertByType(value, p.PropertyType), null);
                                 }
                             }
                         }
                     }
-                    sdr.Close();
-                    sdr.Dispose();
                 }
             }
             catch (Exception ex) { if (PageConfig.DEBUG.Equals("1")) { Extion = ex.ToString(); } }
@@ -172,29 +158,27 @@ namespace dscm.Tools.Sql
                     }
                 }
                 Sql = sql;
-                SqlCon sc = new SqlCon();
-                SqlDataReader sdr = sc.Read(sql);
-                ArrayList _al = new ArrayList();
-
-                if (sdr != null)
+                DataSet ds = SqlCon.Read(sql);
+                if (0 < ds.Tables[0].Rows.Count)
                 {
-                    while (sdr.Read())
+                    string columName = "";
+                    foreach (DataRow dr in ds.Tables[0].Rows)
                     {
-                        PropertyInfo[] pi = model.GetType().GetProperties();
-                        for (int j = 0; j < pi.Length; j++)
+                        PropertyInfo[] proInfo = model.GetType().GetProperties();
+
+                        foreach (DataColumn col in dr.Table.Columns)
                         {
-                            for (int i = 0; i < sdr.FieldCount; i++)
+                            columName = col.ColumnName;
+                            foreach (var p in proInfo)
                             {
-                                if (pi[j].Name.ToLower() == sdr.GetName(i).ToLower())
+                                if (columName.ToLower().Equals(p.Name.ToLower()))
                                 {
-                                    object obj = sdr.GetValue(i);
-                                    pi[j].SetValue(model, obj.ToString(), null);
+                                    object value = dr[columName];
+                                    p.SetValue(model, HConvertByType(value, p.PropertyType), null);
                                 }
                             }
                         }
                     }
-                    sdr.Close();
-                    sdr.Dispose();
                 }
             }
             catch (Exception ex) { if (PageConfig.DEBUG.Equals("1")) { Extion = ex.ToString(); } }
@@ -211,32 +195,31 @@ namespace dscm.Tools.Sql
         {
             try
             {
-                SqlCon sc = new SqlCon();
-                SqlDataReader sdr = sc.Read(sql);
+                DataSet ds = SqlCon.Read(sql);
                 ArrayList _al = new ArrayList();
-                if (sdr != null)
+                if (0 < ds.Tables[0].Rows.Count)
                 {
-                    while (sdr.Read())
+                    string columName = "";
+                    foreach (DataRow dr in ds.Tables[0].Rows)
                     {
                         T model = Activator.CreateInstance<T>();
-                        PropertyInfo[] pi = model.GetType().GetProperties();
-                        for (int j = 0; j < pi.Length; j++)
+                        PropertyInfo[] proInfo = model.GetType().GetProperties();
+
+                        foreach (DataColumn col in dr.Table.Columns)
                         {
-                            for (int i = 0; i < sdr.FieldCount; i++)
+                            columName = col.ColumnName;
+                            foreach (var p in proInfo)
                             {
-                                if (pi[j].Name.ToLower() == sdr.GetName(i).ToLower())
+                                if (columName.ToLower().Equals(p.Name.ToLower()))
                                 {
-                                    object obj = sdr.GetValue(i);
-                                    pi[j].SetValue(model, obj.ToString(), null);
+                                    object value = dr[columName];
+                                    p.SetValue(model, HConvertByType(value, p.PropertyType), null);
                                 }
                             }
                         }
                         _al.Add(model);
                     }
-                    sdr.Close();
-                    sdr.Dispose();
                 }
-                sc.Close();
                 T[] t = new T[_al.Count];
                 for (int i = 0; i < _al.Count; i++)
                 {
@@ -269,23 +252,17 @@ namespace dscm.Tools.Sql
                     }
                 }
 
-                int count = 0;
-                string con = "";
-                SqlCon sc = new SqlCon();
-                SqlDataReader sdr = sc.Read(sql);
-                ArrayList _al = new ArrayList();
-                if (sdr != null)
+                object count;
+                count = SqlCon.GetScalar(sql);
+
+                if (null != count)
                 {
-                    while (sdr.Read())
-                    {
-                        con = sdr.GetValue(0).ToString();
-                    }
-                    sdr.Close();
-                    sdr.Dispose();
+                    return Convert.ToInt32(count);
                 }
-                sc.Close();
-                int.TryParse(con, out count);
-                return count;
+                else
+                {
+                    return 0;
+                }
             }
             catch (Exception ex) { if (PageConfig.DEBUG.Equals("1")) { Extion = ex.ToString(); } }
             return 0;
@@ -343,32 +320,31 @@ namespace dscm.Tools.Sql
                 }
                 sql = sql + _s + " from " + " (select row_number()over(order by " + orderColm + ")rownumber,* from " + table + ")a " + " where 1=1 " + where + " and rownumber between " + ((pcount - 1) * fcount + 1) + " and " + pcount * fcount + px;
                 Sql = sql;
-                SqlCon sc = new SqlCon();
-                SqlDataReader sdr = sc.Read(sql);
+                DataSet ds = SqlCon.Read(sql);
                 ArrayList _al = new ArrayList();
-                if (sdr != null)
+                if (0 < ds.Tables[0].Rows.Count)
                 {
-                    while (sdr.Read())
+                    string columName = "";
+                    foreach (DataRow dr in ds.Tables[0].Rows)
                     {
                         T model = Activator.CreateInstance<T>();
-                        PropertyInfo[] pi = model.GetType().GetProperties();
-                        for (int j = 0; j < pi.Length; j++)
+                        PropertyInfo[] proInfo = model.GetType().GetProperties();
+
+                        foreach (DataColumn col in dr.Table.Columns)
                         {
-                            for (int i = 0; i < sdr.FieldCount; i++)
+                            columName = col.ColumnName;
+                            foreach (var p in proInfo)
                             {
-                                if (pi[j].Name.ToLower() == sdr.GetName(i).ToLower())
+                                if (columName.ToLower().Equals(p.Name.ToLower()))
                                 {
-                                    object obj = sdr.GetValue(i);
-                                    pi[j].SetValue(model, obj.ToString(), null);
+                                    object value = dr[columName];
+                                    p.SetValue(model, HConvertByType(value, p.PropertyType), null);
                                 }
                             }
                         }
                         _al.Add(model);
                     }
-                    sdr.Close();
-                    sdr.Dispose();
                 }
-                sc.Close();
                 T[] t = new T[_al.Count];
                 for (int i = 0; i < _al.Count; i++)
                 {
@@ -412,32 +388,31 @@ namespace dscm.Tools.Sql
                 string _s = " * ";
                 sql = sql + _s + " from " + " (select row_number()over(order by " + orderColm + " " + px + ")rownumber,* from " + table + " where 1=1 " + where + ")a " + " where 1=1  and rownumber between " + ((pcount - 1) * fcount + 1) + " and " + pcount * fcount + where;
                 Sql = sql;
-                SqlCon sc = new SqlCon();
-                SqlDataReader sdr = sc.Read(sql);
+                DataSet ds = SqlCon.Read(sql);
                 ArrayList _al = new ArrayList();
-                if (sdr != null)
+                if (0 < ds.Tables[0].Rows.Count)
                 {
-                    while (sdr.Read())
+                    string columName = "";
+                    foreach (DataRow dr in ds.Tables[0].Rows)
                     {
                         T model = Activator.CreateInstance<T>();
-                        PropertyInfo[] pi = model.GetType().GetProperties();
-                        for (int j = 0; j < pi.Length; j++)
+                        PropertyInfo[] proInfo = model.GetType().GetProperties();
+
+                        foreach (DataColumn col in dr.Table.Columns)
                         {
-                            for (int i = 0; i < sdr.FieldCount; i++)
+                            columName = col.ColumnName;
+                            foreach (var p in proInfo)
                             {
-                                if (pi[j].Name.ToLower() == sdr.GetName(i).ToLower())
+                                if (columName.ToLower().Equals(p.Name.ToLower()))
                                 {
-                                    object obj = sdr.GetValue(i);
-                                    pi[j].SetValue(model, obj.ToString(), null);
+                                    object value = dr[columName];
+                                    p.SetValue(model, HConvertByType(value, p.PropertyType), null);
                                 }
                             }
                         }
                         _al.Add(model);
                     }
-                    sdr.Close();
-                    sdr.Dispose();
                 }
-                sc.Close();
                 T[] t = new T[_al.Count];
                 for (int i = 0; i < _al.Count; i++)
                 {
@@ -490,32 +465,31 @@ namespace dscm.Tools.Sql
                     }
                 }
                 Sql = sql;
-                SqlCon sc = new SqlCon();
-                SqlDataReader sdr = sc.Read(sql);
+                DataSet ds = SqlCon.Read(sql);
                 ArrayList _al = new ArrayList();
-                if (sdr != null)
+                if (0 < ds.Tables[0].Rows.Count)
                 {
-                    while (sdr.Read())
+                    string columName = "";
+                    foreach (DataRow dr in ds.Tables[0].Rows)
                     {
                         T model = Activator.CreateInstance<T>();
-                        PropertyInfo[] pi = model.GetType().GetProperties();
-                        for (int j = 0; j < pi.Length; j++)
+                        PropertyInfo[] proInfo = model.GetType().GetProperties();
+
+                        foreach (DataColumn col in dr.Table.Columns)
                         {
-                            for (int i = 0; i < sdr.FieldCount; i++)
+                            columName = col.ColumnName;
+                            foreach (var p in proInfo)
                             {
-                                if (pi[j].Name.ToLower() == sdr.GetName(i).ToLower())
+                                if (columName.ToLower().Equals(p.Name.ToLower()))
                                 {
-                                    object obj = sdr.GetValue(i);
-                                    pi[j].SetValue(model, obj.ToString(), null);
+                                    object value = dr[columName];
+                                    p.SetValue(model, HConvertByType(value, p.PropertyType), null);
                                 }
                             }
                         }
                         _al.Add(model);
                     }
-                    sdr.Close();
-                    sdr.Dispose();
                 }
-                sc.Close();
                 T[] t = new T[_al.Count];
                 for (int i = 0; i < _al.Count; i++)
                 {
@@ -555,32 +529,31 @@ namespace dscm.Tools.Sql
                     }
                 }
 
-                SqlCon sc = new SqlCon();
-                SqlDataReader sdr = sc.Read(sql);
+                DataSet ds = SqlCon.Read(sql);
                 ArrayList _al = new ArrayList();
-                if (sdr != null)
+                if (0 < ds.Tables[0].Rows.Count)
                 {
-                    while (sdr.Read())
+                    string columName = "";
+                    foreach (DataRow dr in ds.Tables[0].Rows)
                     {
                         T model = Activator.CreateInstance<T>();
-                        PropertyInfo[] pi = model.GetType().GetProperties();
-                        for (int j = 0; j < pi.Length; j++)
+                        PropertyInfo[] proInfo = model.GetType().GetProperties();
+
+                        foreach (DataColumn col in dr.Table.Columns)
                         {
-                            for (int i = 0; i < sdr.FieldCount; i++)
+                            columName = col.ColumnName;
+                            foreach (var p in proInfo)
                             {
-                                if (pi[j].Name.ToLower() == sdr.GetName(i).ToLower())
+                                if (columName.ToLower().Equals(p.Name.ToLower()))
                                 {
-                                    object obj = sdr.GetValue(i);
-                                    pi[j].SetValue(model, obj.ToString(), null);
+                                    object value = dr[columName];
+                                    p.SetValue(model, HConvertByType(value, p.PropertyType), null);
                                 }
                             }
                         }
                         _al.Add(model);
                     }
-                    sdr.Close();
-                    sdr.Dispose();
                 }
-                sc.Close();
                 T[] t = new T[_al.Count];
                 for (int i = 0; i < _al.Count; i++)
                 {
@@ -602,7 +575,6 @@ namespace dscm.Tools.Sql
         /// <returns></returns>
         public static T[] ReadAll<T>(string table, string where)
         {
-            SqlCon sc = null;
             try
             {
                 string sql = "select * ";
@@ -621,33 +593,31 @@ namespace dscm.Tools.Sql
                         sql = sql + " from " + table;
                     }
                 }
-                sc = new SqlCon();
-                SqlDataReader sdr = sc.Read(sql);
+                DataSet ds = SqlCon.Read(sql);
                 ArrayList _al = new ArrayList();
-                if (sdr != null)
+                if (0 < ds.Tables[0].Rows.Count)
                 {
-                    while (sdr.Read())
+                    string columName = "";
+                    foreach (DataRow dr in ds.Tables[0].Rows)
                     {
                         T model = Activator.CreateInstance<T>();
-                        PropertyInfo[] pi = model.GetType().GetProperties();
+                        PropertyInfo[] proInfo = model.GetType().GetProperties();
 
-                        for (int j = 0; j < pi.Length; j++)
+                        foreach (DataColumn col in dr.Table.Columns)
                         {
-                            for (int i = 0; i < sdr.FieldCount; i++)
+                            columName = col.ColumnName;
+                            foreach (var p in proInfo)
                             {
-                                if (pi[j].Name.ToLower() == sdr.GetName(i).ToLower())
+                                if (columName.ToLower().Equals(p.Name.ToLower()))
                                 {
-                                    object obj = sdr.GetValue(i);
-                                    pi[j].SetValue(model, Convert.ChangeType(obj, pi[j].PropertyType), null);
+                                    object value = dr[columName];
+                                    p.SetValue(model, HConvertByType(value, p.PropertyType), null);
                                 }
                             }
                         }
                         _al.Add(model);
                     }
-                    sdr.Close();
-                    sdr.Dispose();
                 }
-                sc.Close();
                 T[] t = new T[_al.Count];
                 for (int i = 0; i < _al.Count; i++)
                 {
@@ -658,10 +628,6 @@ namespace dscm.Tools.Sql
             catch (Exception ex)
             {
                 if (PageConfig.DEBUG.Equals("1")) { Extion = ex.ToString(); }
-                if (null != sc)
-                {
-                    sc.Close();
-                }
             }
             return null;
         }
@@ -694,10 +660,7 @@ namespace dscm.Tools.Sql
                     }
                     string sql = "insert into " + table + "(" + _s + ") values (" + _v + ")";
                     Sql = sql;
-                    SqlCon sc = new SqlCon();
-                    int ii = sc.UpLoad(sql);
-                    sc.Close();
-                    return ii;
+                    return SqlCon.UpLoad(sql);
                 }
             }
             catch (Exception ex) { if (PageConfig.DEBUG.Equals("1")) { Extion = ex.ToString(); } }
@@ -752,10 +715,7 @@ namespace dscm.Tools.Sql
                     }
 
                     Sql = sql;
-                    SqlCon sc = new SqlCon();
-                    int ii = sc.UpLoad(sql);
-                    sc.Close();
-                    return ii;
+                    return SqlCon.UpLoad(sql);
                 }
             }
             catch (Exception ex) { if (PageConfig.DEBUG.Equals("1")) { Extion = ex.ToString(); } }
@@ -787,13 +747,82 @@ namespace dscm.Tools.Sql
                         sql = "delete from " + table;
                     }
                 }
-                SqlCon sc = new SqlCon();
-                int ii = sc.UpLoad(sql);
-                sc.Close();
-                return ii;
+                return SqlCon.UpLoad(sql);
             }
             catch (Exception ex) { if (PageConfig.DEBUG.Equals("1")) { Extion = ex.ToString(); } }
             return 0;
+        }
+
+        /// <summary>
+        /// 根据TYPE进行转换
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="pptypeName"></param>
+        /// <returns></returns>
+        public static object HConvertByType(object val, Type type)
+        {
+            Type valtype = type;
+            string pptypeName = valtype.Name,
+                   pptypeFullName = valtype.FullName;
+
+            if (pptypeName.LastIndexOf("int") != -1)
+            {
+                return Convert.ToInt32(val);
+            }
+            else if (pptypeName == "DateTime")
+            {
+                return Convert.ToDateTime(val);
+            }
+            else if (pptypeName == "String")
+            {
+                return Convert.ToString(val);
+            }
+            else if (pptypeName == "Decimal")
+            {
+                return Convert.ToDecimal(val);
+            }
+            else if (pptypeName == "Nullable`1")
+            {
+
+                if (pptypeFullName.LastIndexOf("Int") != -1)
+                {
+                    if ((val + "").Length > 0)
+                    {
+                        int tempInt = 0;
+                        int.TryParse(val.ToString(), out tempInt);
+                        return tempInt;
+                    }
+                    else
+                        return null;
+                }
+                else if (pptypeFullName.LastIndexOf("DateTime") != -1)
+                {
+                    if ((val + "").Length > 0)
+                    {
+                        DateTime tempDate = DateTime.Now;
+                        DateTime.TryParse(val.ToString(), out tempDate);
+                        return tempDate;
+                    }
+                    else
+                        return null;
+                }
+                else if (pptypeFullName.LastIndexOf("String") != -1)
+                {
+                    return Convert.ToString(val);
+                }
+                else if (pptypeFullName.LastIndexOf("Decimal") != -1)
+                {
+                    if ((val + "").Length > 0)
+                    {
+                        Decimal tempDecimal = 0;
+                        Decimal.TryParse(val.ToString(), out tempDecimal);
+                        return tempDecimal;
+                    }
+                    else
+                        return null;
+                }
+            }
+            return val;
         }
     }
 }

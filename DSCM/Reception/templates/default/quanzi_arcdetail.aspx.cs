@@ -23,11 +23,11 @@ public partial class Reception_templates_default_quanzi_arcdetail : Page
             article.bqs = article.Article_Biaoqian.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
             article.plnum = SQL.Read("tbl_article_pl", " and article_id='" + article.Article_Id + "'");
             article.user = SQL.Read<tbl_user>("tbl_user", " and user_id='" + article.User_Id + "'");
-            hot = (int.Parse(article.Article_Hot) + 1).ToString();
+            //hot = (int.Parse(article.Article_Hot) + 1).ToString();
             string[] colm = new string[] { "article_hot" };
             string[] value = new string[] { hot };
             //更新文章热度值
-            SQL.Update("tbl_article", colm, value, " and article_id='" + article_id + "'");
+            //SQL.Update("tbl_article", colm, value, " and article_id='" + article_id + "'");
         }
 
     }

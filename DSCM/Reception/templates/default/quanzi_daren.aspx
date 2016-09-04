@@ -84,6 +84,11 @@
                 <%}
                 %>
             </ul>
+            <!-- 加载条 -->
+            <%if (null != user && user.Count() == 10)
+                { %>
+            <div class="loading daren" data-page="1" data-tag="hot">加载更多。。。</div>
+            <%} %>
         </div>
         <div class="blogRight">
             <ul>

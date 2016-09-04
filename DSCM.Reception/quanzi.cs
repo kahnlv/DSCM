@@ -124,7 +124,7 @@ namespace DSCM.Reception
                 _pageindex = QueryString("i"),
                 _pagesize = QueryString("s");
 
-            int pageIndex = 1, pageSize = 10;
+            int pageIndex = 0, pageSize = 10;
 
             if ((_pageindex + "").Length > 0)
             {
@@ -150,29 +150,16 @@ namespace DSCM.Reception
                 tagName = "hot";
             }
 
-            pageSize = pageIndex * pageSize;
-            pageIndex = (pageIndex - 1) * pageSize;
-
             switch (tagName)
             {
                 case "hot":
-                    strSql = string.Format(@"SELECT  u2.n,u.*
-                            FROM tbl_user u ,
-                                (SELECT TOP {0}
-                                        ROW_NUMBER() OVER(ORDER BY(SELECT ISNULL((SELECT
-                                                     SUM(a.article_hot)
-                                                     FROM tbl_article a
-                                                     WHERE
-                                                     a.user_id = u.user_id 
-                                                     ), 0)
-                                        ) DESC ) n ,
-                                u.user_id
-                                FROM tbl_user u 
-                                WHERE u.user_id <> '{2}'
-                            ) u2
-                            WHERE   u.user_id = u2.user_id
-                            AND u2.n > {1}
-                            ORDER BY u2.n;", pageSize, pageIndex, user_id);
+                    strSql = string.Format(@"SELECT  * ,
+                                                ISNULL(( SELECT MAX(ta.[article_hot]) hot
+                                                FROM   [tbl_article] [ta]
+                                                WHERE  ta.[user_id] = tu.[user_id]
+                                                ), 0) hot
+                                                FROM    [tbl_user] [tu]
+                                                WHERE   tu.[user_id] <> '{0}' Order by hot desc;", user_id);
                     break;
                 case "like":
                     break;
@@ -192,18 +179,22 @@ namespace DSCM.Reception
                                                         AND tu2.n > {2};", pageSize, user_id, pageIndex);
                     break;
                 default:
-                    strSql = string.Format(@"SELECT * FROM [tbl_user] [tu],
-                                                (SELECT TOP {0} t.[user_id] FROM
-                                                    (SELECT TOP {2}  [tu].*
-                                                        FROM    [tbl_user_biaoqian] [tub]
-                                                        INNER JOIN [tbl_user] [tu] ON [tu].[user_id] = [tub].[user_id]
-                                                        WHERE   [tub].[biaoqian_name] = '{1}'
-                                                    AND tub.user_id <> '{3}') t) t WHERE
-                                            tu.[user_id] = t.[user_id]", pageSize, tagName, pageIndex, user_id);
+                    strSql = string.Format(@"SELECT  *
+                                                FROM    ( SELECT    tu.* ,
+                                                                    ( SELECT    tub.[user_id]
+                                                                      FROM      [tbl_user_biaoqian] [tub]
+                                                                      WHERE     tub.[biaoqian_name] = '{0}'
+                                                                                AND tub.[user_id] = tu.[user_id]
+                                                                      GROUP BY  tub.[user_id]
+                                                                    ) tag
+                                                          FROM      [tbl_user] [tu]
+                                                          WHERE     [tu].[user_id] <> '{1}'
+                                                        ) tu
+                                                WHERE   tu.[tag] IS NOT NULL;", tagName, user_id);
                     break;
             }
 
-            user = SQL.ReadAll<tbl_user>(strSql);
+            user = SQL.ReadAll<tbl_user>(strSql).Skip(pageIndex * pageSize).Take(pageSize).ToArray();
 
             if (null != user)
             {
@@ -229,22 +220,83 @@ namespace DSCM.Reception
         public ArrayList follow_DSCM()
         {
             ArrayList al = new ArrayList();
-            string strSql = @" SELECT tu.*, tf.[friend_id],(SELECT TOP 1 [ta].[article_times] FROM [tbl_article] [ta] WHERE ta.[user_id] =  tu.[user_id] 
+
+            al = GetFollowList(0, 20, "", "");
+
+            return al;
+        }
+
+        public ArrayList GetFollowList(int pageIndex, int pageSize, string keyword, string order)
+        {
+            ArrayList al = new ArrayList();
+            string strSql = string.Format(@" SELECT tu.*, tf.[friend_id],(SELECT TOP 1 [ta].[article_times] FROM [tbl_article] [ta] WHERE ta.[user_id] =  tu.[user_id] 
                                     ORDER BY [ta].[article_times]) update_time FROM [tbl_friend] [tf]
                                     INNER JOIN [tbl_user] [tu] ON tf.[friend_user_id] = tu.[user_id]
-                                    WHERE [tf].[user_id] = '" + user_id + "' and [tf].[if_friend] = 1 ORDER BY tf.[friend_id] DESC";
+                                    WHERE [tf].[user_id] = '" + user_id + "' and [tf].[if_friend] = 1 {0}",
+                                    (keyword + "").Length > 0 ? " and tu.User_Name like '%" + keyword + "%'" : "");
 
-            al.Add(SQL.ReadAll<tbl_user>(strSql));
+            if ((order + "").Length > 0)
+            {
+                strSql += "order by update_time desc";
+            }
+            else
+            {
+                strSql += "ORDER BY tf.[friend_id] DESC";
+            }
 
-            strSql = @"SELECT TOP 4 * FROM [tbl_user] [tu]
+            var list = SQL.ReadAll<tbl_user>(strSql);
+
+            if (null != list && list.Count() > 0)
+            {
+                list = list.Skip(pageIndex * pageSize).Take(pageSize).ToArray(); ;
+                al.Add(list);
+            }
+
+            if (pageIndex == 0 && keyword.Length == 0)
+            {
+                strSql = @"SELECT TOP 4 * FROM [tbl_user] [tu]
                                 WHERE
                                 [tu].[user_id] NOT IN (SELECT[tf].[friend_user_id] FROM[tbl_friend][tf] WHERE [tf].[user_id] = '" + user_id + @"' and [tf].[if_friend] = 1)
                                 AND
                                 tu.[user_id] <> '" + user_id + "' ORDER BY NEWID()";
 
-            al.Add(SQL.ReadAll<tbl_user>(strSql));
+                al.Add(SQL.ReadAll<tbl_user>(strSql));
+            }
 
             return al;
+        }
+
+        public void FollowList_DSCM()
+        {
+            string keyword = QueryString("key"),
+                pageIndex = QueryString("pi"),
+                pageSize = QueryString("ps"),
+                order = QueryString("o");
+
+            int _pageIndex = 0,
+                _pageSize = 0;
+
+            int.TryParse(pageIndex, out _pageIndex);
+            int.TryParse(pageSize, out _pageSize);
+
+            ArrayList al = new ArrayList();
+
+            al = GetFollowList(_pageIndex, _pageSize, keyword, order);
+
+            if (al.Count > 0)
+            {
+                Newtonsoft.Json.JsonSerializerSettings jsSettings = new Newtonsoft.Json.JsonSerializerSettings();
+
+                Newtonsoft.Json.JsonConvert.DefaultSettings = new Func<Newtonsoft.Json.JsonSerializerSettings>(() =>
+                {
+                    jsSettings.DateFormatHandling = Newtonsoft.Json.DateFormatHandling.MicrosoftDateFormat;
+                    jsSettings.DateFormatString = "yyyy/MM/dd HH:mm";
+                    return jsSettings;
+                });
+
+
+                PageWrite(Newtonsoft.Json.JsonConvert.SerializeObject(al[0], jsSettings), "STR");
+            }
         }
 
         public void GetList_DSCM()
@@ -737,8 +789,14 @@ namespace DSCM.Reception
                 plType = QueryString("t");
             if ((id + "").Length > 0)
             {
-                tbl_article_pl[] tap = SQL.ReadAll<tbl_article_pl>("tbl_article_pl [tap]",
-                    string.Format("[tap].[type] = {0} AND [tap].[IsDelete] = 0 AND [tap].[article_id]='{1}'", plType.Length == 0 ? "1" : plType, id));
+                string sqlWhere = "[tap].[IsDelete] = 0 AND [tap].[article_id]='" + id + "'";
+
+                if (!"-1".Equals(plType))
+                {
+                    sqlWhere += " AND type =" + plType;
+                }
+
+                tbl_article_pl[] tap = SQL.ReadAll<tbl_article_pl>("tbl_article_pl [tap]", sqlWhere);
 
                 int pi = 0, ps = 0;
 

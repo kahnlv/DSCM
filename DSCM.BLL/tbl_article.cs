@@ -43,8 +43,8 @@ namespace DSCM.ds_tbl_article
             get { return article_times; }
             set { article_times = value; }
         }
-        string article_hot = "";
-        public string Article_Hot
+        int article_hot = 0;
+        public int Article_Hot
         {
             get { return article_hot; }
             set { article_hot = value; }

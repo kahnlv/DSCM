@@ -1,10 +1,11 @@
-﻿using System; 
-using System.Collections.Generic; 
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using DSCM.ds_tbl_friend;
 using DSCM.ds_tbl_user_biaoqian;
 using DSCM.ds_tbl_article;
-namespace DSCM.ds_tbl_user {
+namespace DSCM.ds_tbl_user
+{
     public class tbl_user
     {
         public tbl_friend[] tbl_friend = new tbl_friend[] { };
@@ -119,5 +120,7 @@ namespace DSCM.ds_tbl_user {
         }
 
         public string User_recommend { get; set; }
+
+        public DateTime? Update_Time { get; set; }
     }
 }

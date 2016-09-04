@@ -3,76 +3,98 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Text;
 using DSCM.Config;
+using System.Data;
 
 namespace dscm.Library
 {
     public class SqlCon
     {
-        SqlConnection MyCon;
-        SqlTransaction SqlTra;
-        public SqlCon()
+        public static SqlConnection Connection
         {
-            try
+            get
             {
-                string con = PageConfig.SqlCon;
-                MyCon = new SqlConnection(con);  //Linestr为连接路径
-                MyCon.Open();
-                SqlTra = MyCon.BeginTransaction();//开始事务
-            }
-            catch (Exception ex)
-            {
-                MyCon.Close();
-                MyCon.Dispose();
+                SqlConnection conn = new SqlConnection(PageConfig.SqlCon);
+
+                if (conn.State == System.Data.ConnectionState.Closed)
+                {
+                    conn.Open();
+                }
+                else if (conn.State == System.Data.ConnectionState.Broken)
+                {
+                    conn.Close();
+                    conn.Open();
+                }
+
+                return conn;
             }
         }
 
-        public void Close()
+        public void Close(SqlConnection conn)
         {
-            try
+            if (null != conn)
             {
-                MyCon.Close();
-                MyCon.Dispose();
-            }
-            catch
-            {
-                SqlTra.Rollback();
-                MyCon.Close();
-                MyCon.Dispose();
-            }
-            finally
-            {
-                MyCon.Close();
-                MyCon.Dispose();
+                if (System.Data.ConnectionState.Open == conn.State)
+                {
+                    conn.Close();
+                }
             }
         }
 
-        public SqlDataReader Read(string sql)
+        public void Dispose(SqlConnection conn)
         {
-            try
+            if (null != conn)
             {
-                SqlCommand myCom = new SqlCommand(sql, MyCon, SqlTra);
-                myCom.CommandTimeout = 0;
-                SqlDataReader sdr = myCom.ExecuteReader();
-                return sdr;
-            }
-            catch (Exception ex)
-            {
-                return null;
+                conn.Dispose();
+                conn = null;
             }
         }
 
-        public int UpLoad(string sql)
+        public static DataSet Read(string sqlStr)
         {
-            try
+            using (SqlConnection conn = new SqlConnection(PageConfig.SqlCon))
             {
-                SqlCommand myCom = new SqlCommand(sql, MyCon, SqlTra);
-                myCom.CommandTimeout = 0;
-                int i = myCom.ExecuteNonQuery();
-                myCom.Dispose();
-                SqlTra.Commit();
-                return i;
+                SqlCommand cmd = new SqlCommand();
+                using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                {
+                    DataSet ds = new DataSet();
+                    GetParameters(conn, cmd, sqlStr, null, null);
+                    try
+                    {
+                        da.Fill(ds);
+
+                    }
+                    catch (SqlException e)
+                    {
+                        throw new Exception(e.Message);
+                    }
+
+                    return ds;
+                }
             }
-            catch { return 0; }
+        }
+
+        public static int UpLoad(string sql)
+        {
+            int ret = 0;
+            using (SqlConnection conn = new SqlConnection(PageConfig.SqlCon))
+            {
+                using (SqlTransaction trans = conn.BeginTransaction())
+                {
+                    SqlCommand cmd = new SqlCommand();
+                    try
+                    {
+                        GetParameters(conn, cmd, sql, trans, null);
+                        ret = cmd.ExecuteNonQuery();
+                        trans.Commit();
+                    }
+                    catch (SqlException e)
+                    {
+                        trans.Rollback();
+                        throw new Exception(e.Message);
+                    }
+                    return ret;
+                }
+            }
         }
 
         /// <summary>
@@ -101,6 +123,32 @@ namespace dscm.Library
                 }
             }
         }
+        /// <summary>
+        /// 执行一条计算查询结果语句，返回查询结果
+        /// </summary>
+        /// <param name="sqlStr"></param>
+        /// <returns></returns>
+        public static object GetScalar(string sqlStr)
+        {
+            using (SqlConnection conn = new SqlConnection(PageConfig.SqlCon))
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = sqlStr;
+                    object ret = cmd.ExecuteScalar();
+                    if (ret == null)
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        return ret;
+                    }
+                }
+            }
+        }
+
 
         public static void GetParameters(SqlConnection conn, SqlCommand cmd, string sqlStr, SqlTransaction trans, SqlParameter[] cmdParams)
         {

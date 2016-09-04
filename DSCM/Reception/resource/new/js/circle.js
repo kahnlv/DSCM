@@ -400,20 +400,25 @@ var ajax_fun = function (param, callback, url, error) {
 
 $(document).on('click.hotTag', '.blogRight a', function () {
     var tagName = $(this).attr('data-name'),
-        pageIndex = 1, pageSize = 10,
-        param = {};
+        pageIndex = 0, pageSize = 10;
     if ($(this).parent('li').hasClass('hot-tag')) {
         return false;
     }
     else {
         $(this).parent('li').addClass('hot-tag').siblings().removeClass('hot-tag');
-        param = { ds: 'quanzi', cm: 'GetList', pi: pageIndex, ps: pageSize, name: tagName };
-        ajax_fun(param, function (data) {
-            var len = data.length, item, html = '';
-            if (data && len > 0) {
-                for (var i = 0; i < len; i++) {
-                    item = data[i];
-                    html += '<li class="blogitm">\
+        setDarenHtml(pageIndex, pageSize, tagName);
+    }
+});
+
+setDarenHtml = function (/**第几页*/pageIndex, /**总页数*/pageSize, /**标签值*/tagName) {
+    var param = { ds: 'quanzi', cm: 'GetList', pi: pageIndex, ps: pageSize, name: tagName },
+    loading = $('.loading');
+    ajax_fun(param, function (data) {
+        var len = data.length, item, html = '', tips = '滚动加载更多';
+        if (data && len > 0) {
+            for (var i = 0; i < len; i++) {
+                item = data[i];
+                html += '<li class="blogitm">\
                     <div class="m-info clearfix">\
                         <a href="javascript:;" class="m-head">\
                             <img src="'+ item.User_Img + '" alt="">\
@@ -425,39 +430,61 @@ $(document).on('click.hotTag', '.blogRight a', function () {
                             <a class="ttl" href="javascript:;" target="_blank">'+ item.User_Name + '</a>\
                         </h3>\
                         <div class="tags">';
-                    if (item.tbl_user_biaoqian && item.tbl_user_biaoqian.length > 0) {
-                        for (var j = 0, l = item.tbl_user_biaoqian.length; j < l; j++) {
-                            html += item.tbl_user_biaoqian[j].biaoqian_Name;
-                        }
+                if (item.tbl_user_biaoqian && item.tbl_user_biaoqian.length > 0) {
+                    for (var j = 0, l = item.tbl_user_biaoqian.length; j < l; j++) {
+                        html += item.tbl_user_biaoqian[j].biaoqian_Name;
                     }
-                    html += '</div>\
+                }
+                html += '</div>\
                     </div>\
                     <div class="postlist">\
                         <ul>';
-                    if (item.tbl_article && item.tbl_article.length > 0) {
-                        for (var j = 0, l = item.tbl_article.length; j < l; j++) {
-                            var aItem = item.tbl_article[j];
-                            html += '<li class="m-post m-post-img"><a class="fullnk" href="javascript:;" target="_blank">';
-                            if (aItem.Article_Pic.length == 0) {
-                                html += '<span class="pic">' + aItem.Article_Title + unescape(aItem.Article_Contents) + '</span><span class="layer"></span>';
-                            }
-                            else {
-                                html += '<span class="pic" style="background: url(' + aItem.Article_Pic + ') center center no-repeat;"></span><span class="layer"></span>'
-                            }
-                            html += '</a></li>'
+                if (item.tbl_article && item.tbl_article.length > 0) {
+                    for (var j = 0, l = item.tbl_article.length; j < l; j++) {
+                        var aItem = item.tbl_article[j];
+                        html += '<li class="m-post m-post-img"><a class="fullnk" href="javascript:;" target="_blank">';
+                        if (aItem.Article_Pic.length == 0) {
+                            html += '<span class="pic">' + aItem.Article_Title + unescape(aItem.Article_Contents) + '</span><span class="layer"></span>';
                         }
+                        else {
+                            html += '<span class="pic" style="background: url(' + aItem.Article_Pic + ') center center no-repeat;"></span><span class="layer"></span>'
+                        }
+                        html += '</a></li>'
                     }
-                    html += '</ul>\
+                }
+                html += '</ul>\
                     </div>\
                 </li>';
-                }
             }
+        }
 
+        if (len < 10 && len > 0) {
+            tips = '<div>到底了~</div>';
+        } else if (len == 0) {
+            tips = '暂无数据';
+        }
+
+        if (pageIndex == 0) {
             $('.blogUL').html(html);
+        } else {
+            $('.blogUL').append(html);
+        }
 
-        }, '/Reception/index.aspx');
-    }
-});
+        pageIndex = parseInt(pageIndex + 1);
+
+        if (loading && loading.length == 0) {
+            $('.blogUL').after('<div class="loading daren" data-tag="' + tagName + '" data-page="' + pageIndex + '">' + tips + '</div>');
+        }
+        else {
+            loading.attr({ 'data-page': pageIndex, 'data-tag': tagName }).html(tips);
+        }
+
+    }, '/Reception/index.aspx',
+        function (error) {
+            console.log(error);
+            _this.html('<div>服务器有点忙或您的网络断开了，请重新尝试</div>');
+        });
+}
 
 $(document).on('click', '.smallImg', function () {
     $(this).hide();
@@ -468,40 +495,22 @@ $(document).on('click', '.bigImg', function () {
     $(this).siblings('.smallImg').show();
 });
 
+/*******热点start**********/
 $(document).on('click', '.hot', function (e) {
     var id = $(this).parents('.optRight').attr('data-id'),
             messageList = $(this).parents('.messageList'),
-            hotPanle = messageList.find('.hotPanle');
-    if (hotPanle && hotPanle.length == 0) {
-        ajax_fun({ ds: 'quanzi', cm: 'review', id: id, pi: 0, ps: 10 }, function (data) {
-            var html = '';
-            if (data && data.length > 0) {
-                html = ' <div class="review_pop relative hotPanle">\
+            hotPanle = messageList.find('.hotPanle'),
+             html = ' <div class="review_pop relative hotPanle">\
 					<i class="triange_top" style="right: 183px;"></i>\
-					<ul class="review_list marT20">';
-                for (var i = 0, len = data.length; i < len; i++) {
-                    var item = data[i],
-                        user = item.user;
-
-                    html += '<li class="clearfix"><a class="img_left"><img src="' + user.User_Img + '" alt=""></a>';
-                    html += '<div class="cmtcnt">\
-								<div class="cmt_left">\
-									<a href="" class="user">' + user.User_Name + '</a>\
-									<span class="cmttxt">喜欢这篇文章</span>\
-								</div>\
-							</div></li>';
-                }
-                html += '</ul><div class="slideUp">\
+					<ul class="review_list marT20"></ul><div class="slideUp">\
 						<a href="javascript::">收起</a>\
 					</div>\
 				</div>';
-
-
-
-                messageList.find('.review_pop').remove();
-                messageList.append(html);
-            }
-        }, '/Reception/index.aspx');
+    if (hotPanle && hotPanle.length == 0) {
+        messageList.find('.review_pop').remove();
+        messageList.append(html);
+        var hotPanle = messageList.find('.review_list');
+        setHotHtmml(id, 0, 10, -1, hotPanle);
     }
     else {
         if (hotPanle.is(':hidden')) {
@@ -511,6 +520,51 @@ $(document).on('click', '.hot', function (e) {
         }
     }
 });
+
+setHotHtmml = function (id, pi, ps, t, hotPanle) {
+    ajax_fun({ ds: 'quanzi', cm: 'review', id: id, pi: pi, ps: ps, t: t }, function (data) {
+        var lihtml = '', hotLoad = hotPanle.next('.hotLoad'), tips = '点击加载更多。。。';
+        if (data && data.length > 0) {
+            for (var i = 0, len = data.length; i < len; i++) {
+                var item = data[i],
+                    user = item.user;
+
+                lihtml += '<li class="clearfix"><a class="img_left"><img src="' + user.User_Img + '" alt=""></a>';
+                lihtml += '<div class="cmtcnt">\
+								<div class="cmt_left">\
+									<a href="" class="user">' + user.User_Name + '</a>\
+									<span class="cmttxt">' + (item.Type == 0 ? '评论了这篇文章' : '喜欢这篇文章') + '</span>\
+								</div>\
+							</div></li>';
+            }
+            pi += 1;
+            hotPanle.append(lihtml);
+
+            if (len < ps) {
+                tips = '';
+            }
+
+            if (hotLoad.length == 0) {
+                hotPanle.after('<div class="loading hotLoad" data-page="' + pi + '">' + tips + '</div>');
+            } else {
+                hotLoad.attr('data-page', pi).html('');
+            }
+        } else {
+            hotLoad.html('').removeClass('hotLoad');
+        }
+    }, '/Reception/index.aspx');
+}
+
+$(document).on('click', '.hotLoad', function () {
+    var pi = parseInt($(this).attr('data-page')),
+        id = $(this).parents('.messageList').find('.optRight').attr('data-id'),
+        hotPanle = $(this).siblings('.review_list');
+
+    setHotHtmml(id, pi, 10, -1, hotPanle);
+});
+/********end*********/
+
+/*****评论start*****/
 $(document).on('click', '.review', function () {
     var id = $(this).parents('.optRight').attr('data-id'),
                 messageList = $(this).parents('.messageList'),
@@ -545,7 +599,7 @@ $(document).on('click', '.review', function () {
 
 var setReviewHtml = function (id, pi, ps, t, reviewList) {
     ajax_fun({ ds: 'quanzi', cm: 'review', id: id, pi: pi, ps: ps, t: t }, function (data) {
-        var lihtml = '', reviewLoad = reviewList.next('.reviewLoad');
+        var lihtml = '', reviewLoad = reviewList.next('.reviewLoad'), tips = '点击加载更多。。。';
         if (data && data.length > 0) {
             for (var i = 0, len = data.length; i < len; i++) {
                 var item = data[i], user = item.user;
@@ -568,13 +622,18 @@ var setReviewHtml = function (id, pi, ps, t, reviewList) {
             }
             pi += 1;
             reviewList.append(lihtml);
+
+            if (len < ps) {
+                tips = '';
+            }
+
             if (reviewLoad.length == 0) {
-                reviewList.after('<div class="loading reviewLoad" data-page="' + pi + '">点击加载更多。。。</div>');
+                reviewList.after('<div class="loading reviewLoad" data-page="' + pi + '">' + tips + '</div>');
             } else {
-                reviewLoad.attr('data-page', pi);
+                reviewLoad.attr('data-page', pi).html(tips);
             }
         } else {
-            reviewLoad.html('到底了~').removeClass('reviewLoad');
+            reviewLoad.html('').removeClass('reviewLoad');
         }
     }, '/Reception/index.aspx');
 }
@@ -586,6 +645,7 @@ $(document).on('click', '.reviewLoad', function () {
 
     setReviewHtml(id, pi, 10, 0, reviewList);
 });
+/*****end*****/
 
 $(document).on('click', '.slideUp', function () {
     $(this).parent().remove();
@@ -628,34 +688,126 @@ $(document).on('click', '.fb_btn', function () {
 });
 
 $(window).scroll(function () {
-    var _this = $('.index'), pageindex = _this.attr('data-page'), tips = _this.find('div').text();
+    var _this = $('.loading'), pageindex = _this.attr('data-page'), tips = _this.find('div').text();
     if (_this.length > 0 && tips != '到底了~') {
         if ($(document).scrollTop() >= $(document).height() - $(window).height()) {
-            console.log(_this.find('span').length)
             if (_this.find('span').length == 0) {
                 _this.html('<span class="color1"></span><span class="color2"></span><span class="color3"></span><span class="color4"></span><span class="color5"></span>');
-                ajax_fun({ ds: 'quanzi', cm: 'page', pageindex: pageindex },
-                    function (data) {
-                        var item,
-                            user,
-                            html = '';
-                        if (data && data.length > 0) {
-                            for (var i = 0, len = data.length; i < len; i++) {
-                                item = data[i];
-                                user = item.user;
-                                html += setContentHtml(item.Article_Pic, unescape(item.Article_Contents), item.Article_Title, user.User_Name, user.User_Img, item.bqs, user.User_Id, user.User_Id == item.User_Id, item.Article_Pics, item.Article_Hot, item.plnum,item.Article_Id);
-                            }
-                            _this.attr('data-page', parseInt(pageindex) + 1).html('<div>加载更多。。。</div>').before(html);
-                        } else {
-                            _this.html('<div>到底了~</div>');
-                        }
-                    },
-                    '/Reception/index.aspx',
-                    function (error) {
-                        console.log(error);
-                        _this.html('<div>服务器有点忙或您的网络断开了，请重新尝试</div>');
-                    });
+            }
+
+            if (_this.hasClass('index')) {
+                getIndexHtml(pageindex, _this);
+            }
+            else if (_this.hasClass('daren')) {
+                var tagName = _this.attr('data-tag');
+                setDarenHtml(pageindex, 10, tagName);
+            }
+            else if (_this.hasClass('follow')) {
+                var keyword = _this.attr('data-key');
+                setFollowHtml(pageindex, _this, keyword);
             }
         }
+    }
+});
+
+
+getIndexHtml = function (pageindex, _this) {
+    ajax_fun({ ds: 'quanzi', cm: 'page', pageindex: pageindex },
+        function (data) {
+            var item,
+                user,
+                html = '';
+            if (data && data.length > 0) {
+                for (var i = 0, len = data.length; i < len; i++) {
+                    item = data[i];
+                    user = item.user;
+                    html += setContentHtml(item.Article_Pic, unescape(item.Article_Contents), item.Article_Title, user.User_Name, user.User_Img, item.bqs, user.User_Id, user.User_Id == item.User_Id, item.Article_Pics, item.Article_Hot, item.plnum, item.Article_Id);
+                }
+                _this.attr('data-page', parseInt(pageindex) + 1).html('<div>加载更多。。。</div>').before(html);
+            } else {
+                _this.html('<div>到底了~</div>');
+            }
+        },
+        '/Reception/index.aspx',
+        function (error) {
+            console.log(error);
+            _this.html('<div>服务器有点忙或您的网络断开了，请重新尝试</div>');
+        });
+}
+
+setFollowHtml = function (pageindex, _this, keyword, orderby) {
+    ajax_fun({ ds: 'quanzi', cm: 'FollowList', pi: pageindex, key: keyword, o: orderby, ps: 20 }, function (data) {
+        var item, len, html = '', tips = '滚动加载更多。。。';
+
+        if (data && data.length > 0) {
+            for (var i = 0, len = data.length; i < len; i++) {
+                item = data[i];
+                html += '<li class="friend" data-user="' + item.User_Id + '">\
+                    <div class="focusHead">\
+                        <a href="javascript:;" target="_blank">\
+                            <img class="xtag" src="' + item.User_Img + '">\
+                        </a>\
+                    </div>\
+                    <div class="cnt">\
+                        <h4>\
+                            <em>\
+                                <a href="javascript:;" class="xtag" target="_blank">' + item.User_Name + '</a>\
+                            </em>\
+                        </h4>\
+                        <p class="xtag">' + (item.Update_Time && item.Update_Time.length > 0 ? item.Update_Time : '未更新') + '</p>\
+                    </div>\
+                    <a href="javascript:;" class="no_focus" title="取消关注">-</a>\
+                </li>';
+            }
+
+            if (len < 20 && len > 0) {
+                tips = '<div></div>';
+            } else if (len == 0) {
+                tips = '暂无关注好友';
+            }
+
+            if (pageindex == 0) {
+                $('.f-cb').html(html);
+            } else {
+                $('.f-cb').append(html);
+            }
+
+            pageindex = parseInt(pageindex + 1);
+
+            if (_this && _this.length == 0) {
+                $('.f-cb').after('<div class="loading follow" data-key="' + keyword + '" data-page="' + pageindex + '">' + tips + '</div>');
+            }
+            else {
+                _this.attr({ 'data-page': pageindex, 'data-key': keyword }).html(tips);
+            }
+        } else {
+            $('.f-cb').html(html);
+            if (_this && _this.length == 0) {
+                $('.f-cb').after('<div class="loading follow" data-key="' + keyword + '" data-page="' + pageindex + '"></div>');
+            }
+            else {
+                _this.attr({ 'data-page': pageindex, 'data-key': keyword }).html('');
+            }
+        }
+    }, '/Reception/index.aspx',
+    function (error) {
+        console.log(error);
+        _this.html('<div>服务器有点忙或您的网络断开了，请重新尝试</div>');
+    });
+}
+
+$('button[type=submit]').on('click', function () {
+    var keyword = $('.searchInp').val();
+    setFollowHtml(0, $('.follow'), keyword);
+    return false;
+});
+
+$('.m-tabbar .ztag').on('click', function () {
+    $(this).addClass('curtab').siblings().removeClass('curtab');
+
+    if ($(this).index() == 0) {
+        setFollowHtml(0, $('.follow'), "");
+    } else {
+        setFollowHtml(0, $('.follow'), "", 1);
     }
 });
